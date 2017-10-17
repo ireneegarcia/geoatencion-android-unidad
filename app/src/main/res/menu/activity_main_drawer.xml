@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_map"
+            android:icon="@drawable/pin"
+            android:title="Mapa" />
+        <item
+            android:id="@+id/nav_network"
+            android:icon="@drawable/star"
+            android:title="Unidad de atención" />
+        <item
+            android:id="@+id/nav_alarm"
+            android:icon="@drawable/megaphone"
+            android:title="Status de alarma" />
+        <item
+            android:id="@+id/nav_profile"
+            android:icon="@drawable/user"
+            android:title="Mi perfil" />
+        <item
+            android:id="@+id/nav_history"
+            android:icon="@drawable/orderhistory"
+            android:title="Historial" />
+
+       <!-- <item
+            android:id="@+id/nav_log_out"
+            android:icon="@drawable/ic_menu_manage"
+            android:title="Cerrar sesión"/>-->
+    </group>
+
+   <!-- <item android:title="Communicate">
+        <menu>
+            <item
+                android:id="@+id/nav_share"
+                android:icon="@drawable/ic_menu_share"
+                android:title="Share" />
+            <item
+                android:id="@+id/nav_send"
+                android:icon="@drawable/ic_menu_send"
+                android:title="Send" />
+        </menu>
+    </item>-->
+
+</menu>
