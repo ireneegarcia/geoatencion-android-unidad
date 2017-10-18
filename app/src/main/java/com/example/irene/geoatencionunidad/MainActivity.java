@@ -1,4 +1,4 @@
-package com.example.irene.geoatencion;
+package com.example.irene.geoatencionunidad;
 
 import android.content.Context;
 import android.content.Intent;
@@ -16,7 +16,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
-import com.example.irene.geoatencion.Model.NotificationFirebase;
+import com.example.irene.geoatencionunidad.Model.NotificationFirebase;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {

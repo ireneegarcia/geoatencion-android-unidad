@@ -1,4 +1,4 @@
-package com.example.irene.geoatencion.Model;
+package com.example.irene.geoatencionunidad.Model;
 
 /**
  * Created by Irene on 26/8/2017.

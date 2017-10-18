@@ -1,4 +1,4 @@
-package com.example.irene.geoatencion;
+package com.example.irene.geoatencionunidad;
 
 
 import android.content.Context;
@@ -12,9 +12,9 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.example.irene.geoatencion.Model.Logs;
-import com.example.irene.geoatencion.Model.Networks;
-import com.example.irene.geoatencion.Remote.APIService;
+import com.example.irene.geoatencionunidad.Model.Logs;
+import com.example.irene.geoatencionunidad.Model.Networks;
+import com.example.irene.geoatencionunidad.Remote.APIService;
 
 import java.util.List;
 

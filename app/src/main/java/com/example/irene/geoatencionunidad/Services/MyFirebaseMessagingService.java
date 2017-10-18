@@ -1,4 +1,4 @@
-package com.example.irene.geoatencion.Services;
+package com.example.irene.geoatencionunidad.Services;
 
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -8,10 +8,10 @@ import android.media.RingtoneManager;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
-import com.example.irene.geoatencion.MainActivity;
-import com.example.irene.geoatencion.MapsFragment;
-import com.example.irene.geoatencion.Model.NotificationFirebase;
-import com.example.irene.geoatencion.R;
+import com.example.irene.geoatencionunidad.MainActivity;
+import com.example.irene.geoatencionunidad.MapsFragment;
+import com.example.irene.geoatencionunidad.Model.NotificationFirebase;
+import com.example.irene.geoatencionunidad.R;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 

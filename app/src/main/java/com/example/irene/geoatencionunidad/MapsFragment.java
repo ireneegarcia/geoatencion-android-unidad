@@ -1,4 +1,4 @@
-package com.example.irene.geoatencion;
+package com.example.irene.geoatencionunidad;
 
 
 import android.Manifest;
@@ -34,14 +34,14 @@ import android.widget.RelativeLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 
-import com.example.irene.geoatencion.Model.Alarma;
-import com.example.irene.geoatencion.Model.Alarmas;
-import com.example.irene.geoatencion.Model.CategoriaAdapterListView;
-import com.example.irene.geoatencion.Model.CategoriaServicios;
-import com.example.irene.geoatencion.Model.Logs;
-import com.example.irene.geoatencion.Model.NotificationFirebase;
-import com.example.irene.geoatencion.Model.Solicitudes;
-import com.example.irene.geoatencion.Remote.APIService;
+import com.example.irene.geoatencionunidad.Model.Alarma;
+import com.example.irene.geoatencionunidad.Model.Alarmas;
+import com.example.irene.geoatencionunidad.Model.CategoriaAdapterListView;
+import com.example.irene.geoatencionunidad.Model.CategoriaServicios;
+import com.example.irene.geoatencionunidad.Model.Logs;
+import com.example.irene.geoatencionunidad.Model.NotificationFirebase;
+import com.example.irene.geoatencionunidad.Model.Solicitudes;
+import com.example.irene.geoatencionunidad.Remote.APIService;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
@@ -64,8 +64,8 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-import static com.example.irene.geoatencion.Model.CategoriaAdapterListView.organismos;
-import static com.example.irene.geoatencion.Model.CategoriaAdapterListView.resultado;
+import static com.example.irene.geoatencionunidad.Model.CategoriaAdapterListView.organismos;
+import static com.example.irene.geoatencionunidad.Model.CategoriaAdapterListView.resultado;
 
 
 /**

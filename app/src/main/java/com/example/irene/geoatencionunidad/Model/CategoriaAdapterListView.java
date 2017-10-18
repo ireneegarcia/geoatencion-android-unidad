@@ -1,4 +1,4 @@
-package com.example.irene.geoatencion.Model;
+package com.example.irene.geoatencionunidad.Model;
 
 import android.content.Context;
 import android.util.Log;
@@ -10,7 +10,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
-import com.example.irene.geoatencion.R;
+import com.example.irene.geoatencionunidad.R;
 
 import java.util.ArrayList;
 import java.util.List;

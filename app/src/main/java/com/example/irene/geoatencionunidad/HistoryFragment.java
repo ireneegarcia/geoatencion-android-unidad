@@ -1,4 +1,4 @@
-package com.example.irene.geoatencion;
+package com.example.irene.geoatencionunidad;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -10,8 +10,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.example.irene.geoatencion.Model.Alarmas;
-import com.example.irene.geoatencion.Remote.APIService;
+import com.example.irene.geoatencionunidad.Model.Alarmas;
+import com.example.irene.geoatencionunidad.Remote.APIService;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;

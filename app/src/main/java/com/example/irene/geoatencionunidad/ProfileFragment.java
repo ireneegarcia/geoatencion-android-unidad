@@ -1,4 +1,4 @@
-package com.example.irene.geoatencion;
+package com.example.irene.geoatencionunidad;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -12,7 +12,7 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 
-import com.example.irene.geoatencion.Model.Variables;
+import com.example.irene.geoatencionunidad.Model.Variables;
 
 
 public class ProfileFragment extends Fragment {

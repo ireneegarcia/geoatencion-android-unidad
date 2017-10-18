@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/common_google_signin_btn_text_dark_default"
-    tools:context="com.example.irene.geoatencion.HistoryFragment">
+    tools:context="com.example.irene.geoatencionunidad.HistoryFragment">
 
     <!-- TODO: Update blank fragment layout -->
 

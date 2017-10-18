@@ -1,13 +1,13 @@
-package com.example.irene.geoatencion.Remote;
+package com.example.irene.geoatencionunidad.Remote;
 
-import com.example.irene.geoatencion.Model.Alarma;
-import com.example.irene.geoatencion.Model.Alarmas;
-import com.example.irene.geoatencion.Model.CategoriaServicios;
-import com.example.irene.geoatencion.Model.FirebaseToken;
-import com.example.irene.geoatencion.Model.Logs;
-import com.example.irene.geoatencion.Model.Networks;
-import com.example.irene.geoatencion.Model.Solicitudes;
-import com.example.irene.geoatencion.Model.Users;
+import com.example.irene.geoatencionunidad.Model.Alarma;
+import com.example.irene.geoatencionunidad.Model.Alarmas;
+import com.example.irene.geoatencionunidad.Model.CategoriaServicios;
+import com.example.irene.geoatencionunidad.Model.FirebaseToken;
+import com.example.irene.geoatencionunidad.Model.Logs;
+import com.example.irene.geoatencionunidad.Model.Networks;
+import com.example.irene.geoatencionunidad.Model.Solicitudes;
+import com.example.irene.geoatencionunidad.Model.Users;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 

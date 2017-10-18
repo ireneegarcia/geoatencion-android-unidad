@@ -1,4 +1,4 @@
-package com.example.irene.geoatencion.Model;
+package com.example.irene.geoatencionunidad.Model;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;

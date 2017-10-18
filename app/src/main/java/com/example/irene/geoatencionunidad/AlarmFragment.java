@@ -1,4 +1,4 @@
-package com.example.irene.geoatencion;
+package com.example.irene.geoatencionunidad;
 
 
 import android.content.Context;
@@ -15,10 +15,10 @@ import android.widget.RelativeLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 
-import com.example.irene.geoatencion.Model.Alarma;
-import com.example.irene.geoatencion.Model.Alarmas;
-import com.example.irene.geoatencion.Model.Logs;
-import com.example.irene.geoatencion.Remote.APIService;
+import com.example.irene.geoatencionunidad.Model.Alarma;
+import com.example.irene.geoatencionunidad.Model.Alarmas;
+import com.example.irene.geoatencionunidad.Model.Logs;
+import com.example.irene.geoatencionunidad.Remote.APIService;
 
 import java.util.ArrayList;
 import java.util.List;

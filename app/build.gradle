@@ -15,7 +15,7 @@ android {
     }
 
     defaultConfig {
-        applicationId "com.example.irene.geoatencion"
+        applicationId "com.example.irene.geoatencionunidad"
         minSdkVersion 15
         targetSdkVersion 26
         versionCode 1

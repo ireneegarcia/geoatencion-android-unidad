@@ -1,10 +1,10 @@
-package com.example.irene.geoatencion.Services;
+package com.example.irene.geoatencionunidad.Services;
 
 import android.content.SharedPreferences;
 import android.util.Log;
 
-import com.example.irene.geoatencion.Model.FirebaseToken;
-import com.example.irene.geoatencion.Remote.APIService;
+import com.example.irene.geoatencionunidad.Model.FirebaseToken;
+import com.example.irene.geoatencionunidad.Remote.APIService;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.FirebaseInstanceIdService;
 

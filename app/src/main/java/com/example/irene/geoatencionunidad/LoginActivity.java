@@ -1,4 +1,4 @@
-package com.example.irene.geoatencion;
+package com.example.irene.geoatencionunidad;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -31,9 +31,9 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import com.example.irene.geoatencion.Model.Users;
-import com.example.irene.geoatencion.Remote.APIService;
-import com.example.irene.geoatencion.Services.MyFirebaseInstanceIDService;
+import com.example.irene.geoatencionunidad.Model.Users;
+import com.example.irene.geoatencionunidad.Remote.APIService;
+import com.example.irene.geoatencionunidad.Services.MyFirebaseInstanceIDService;
 import com.google.firebase.iid.FirebaseInstanceId;
 
 import java.util.ArrayList;
