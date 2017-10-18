@@ -707,7 +707,7 @@ public class MapsFragment extends Fragment {
             return true;
         }
 
-        @Override
+        /*@Override
         protected void onPostExecute(final Boolean success) {
             if (noti.getStatus().equals("en atencion")) {
                 MarkerOptions options = new MarkerOptions();
@@ -732,7 +732,7 @@ public class MapsFragment extends Fragment {
             //notificacionId = (noti.getI);
             notificacionUbicacion = (noti.getStatus());
             //createSimpleDialog(notificacion);
-        }
+        }*/
 
         @Override
         protected void onCancelled() {

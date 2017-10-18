@@ -31,15 +31,17 @@ public class MainActivity extends AppCompatActivity
 
         if (getIntent().getExtras() != null) {
             Log.d("firebase", "DATOS RECIBIDOS MAIN ACTIVITY");
-            Log.d("firebase", "Latitud: " + getIntent().getExtras().getString("networkLatitude"));
-            Log.d("firebase", "Logintud: " + getIntent().getExtras().getString("networkLongitude"));
-            Log.d("firebase", "Unidad: " + getIntent().getExtras().getString("network"));
+            Log.d("firebase", "Latitud del cliente: " + getIntent().getExtras().getString("clientLatitude"));
+            Log.d("firebase", "Logintud del cliente: " + getIntent().getExtras().getString("clientLongitude"));
+            Log.d("firebase", "Direccion del cliente: " + getIntent().getExtras().getString("clientAddress"));
+            Log.d("firebase", "Direccion del cliente: " + getIntent().getExtras().getString("clientName"));
             Log.d("firebase", "Status: " + getIntent().getExtras().getString("status"));
+
             NotificationFirebase notification;
-            notification = new NotificationFirebase(getIntent().getExtras().getString("networkLatitude"),
-                    getIntent().getExtras().getString("networkLongitude"),
-                    getIntent().getExtras().getString("networkAddress"),
-                    getIntent().getExtras().getString("network"),
+            notification = new NotificationFirebase(getIntent().getExtras().getString("clientLatitude"),
+                    getIntent().getExtras().getString("clientLongitude"),
+                    getIntent().getExtras().getString("clientAddress"),
+                    getIntent().getExtras().getString("clientName"),
                     getIntent().getExtras().getString("status"));
             MapsFragment.AgregarMarcadorPush(notification);
         }

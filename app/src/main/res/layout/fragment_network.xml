@@ -12,6 +12,15 @@
         android:layout_height="match_parent"
         android:background="@color/common_google_signin_btn_text_dark_default">
 
+        <ImageView
+            android:id="@+id/imageView8"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:srcCompat="@drawable/iconcar"
+            android:layout_alignBottom="@+id/textView6"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="38dp" />
+
         <TextView
             android:id="@+id/textView6"
             android:layout_width="match_parent"
@@ -42,7 +51,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="ID:"
-                    android:textAlignment="textEnd"
+                    android:textAlignment="viewStart"
                     android:textSize="20sp" />
 
                 <TextView

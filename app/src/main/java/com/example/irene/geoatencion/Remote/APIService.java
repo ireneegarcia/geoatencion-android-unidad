@@ -39,6 +39,11 @@ public interface APIService {
     Call<Users> login(@Field("usernameOrEmail") String username,
                        @Field("password") String password);
 
+    @POST("/api/firebasetokens")
+    @FormUrlEncoded
+    Call<FirebaseToken> registerToken(@Field("token") String token,
+                                      @Field("userId") String user);
+
     @GET("api/networks")
     Call<List<Networks>> listNetworks();
 
@@ -74,10 +79,7 @@ public interface APIService {
 
 
 
-    @POST("/api/firebasetokens")
-    @FormUrlEncoded
-    Call<FirebaseToken> registerToken(@Field("token") String token,
-                                @Field("userId") String user);
+
 
     @GET("api/categoriaservicios")
     Call<List<CategoriaServicios>> listCategories();

@@ -40,15 +40,16 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
         if(remoteMessage.getData() != null) {
             Log.d("firebase", "DATOS RECIBIDOS");
-            Log.d("firebase", "Latitud: " + remoteMessage.getData().get("networkLatitude"));
-            Log.d("firebase", "Logintud: " + remoteMessage.getData().get("networkLongitude"));
-            Log.d("firebase", "Unidad: " + remoteMessage.getData().get("network"));
-            Log.d("firebase", "Status: " + remoteMessage.getData().get("status"));
+            Log.d("firebase", "Latitud del cliente: " + remoteMessage.getData().get("clientLatitude"));
+            Log.d("firebase", "Logintud del cliente: " + remoteMessage.getData().get("clientLongitude"));
+            Log.d("firebase", "Direccion del cliente: " + remoteMessage.getData().get("clientAddress"));
+            Log.d("firebase", "Nombre del cliente: " + remoteMessage.getData().get("status"));
+            Log.d("firebase", "status: " + remoteMessage.getData().get("clientName"));
 
-            notification = new NotificationFirebase(remoteMessage.getData().get("networkLatitude"),
-                    remoteMessage.getData().get("networkLongitude"),
-                    remoteMessage.getData().get("networkAddress"),
-                    remoteMessage.getData().get("network"),
+            notification = new NotificationFirebase(remoteMessage.getData().get("clientLatitude"),
+                    remoteMessage.getData().get("clientLongitude"),
+                    remoteMessage.getData().get("clientAddress"),
+                    remoteMessage.getData().get("clientName"),
                     remoteMessage.getData().get("status"));
             MapsFragment.AgregarMarcadorPush(notification);
             String titulo = remoteMessage.getNotification().getTitle();

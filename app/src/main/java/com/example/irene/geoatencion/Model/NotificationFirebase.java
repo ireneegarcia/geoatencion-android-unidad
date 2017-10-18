@@ -9,48 +9,56 @@ import com.google.gson.annotations.SerializedName;
 
 public class NotificationFirebase {
 
-    @SerializedName("networkLatitude")
+    @SerializedName("clientLatitude")
     @Expose
-    private String networkLatitude;
+    private String clientLatitude;
 
-    @SerializedName("networkLongitude")
+    @SerializedName("clientLongitude")
     @Expose
-    private String networkLongitude;
+    private String clientLongitude;
 
-    @SerializedName("networkAddress")
+    @SerializedName("clientAddress")
     @Expose
-    private String networkAddress;
+    private String clientAddress;
 
-    @SerializedName("network")
+    @SerializedName("clientName")
     @Expose
-    private String network;
+    private String clientName;
 
     @SerializedName("status")
     @Expose
     private String status;
 
-    public String getNetworkLatitude() {
-        return networkLatitude;
+    public String getClientLatitude() {
+        return clientLatitude;
     }
 
-    public void setNetworkLatitude(String networkLatitude) {
-        this.networkLatitude = networkLatitude;
+    public void setClientLatitude(String clientLatitude) {
+        this.clientLatitude = clientLatitude;
     }
 
-    public String getNetworkLongitude() {
-        return networkLongitude;
+    public String getClientLongitude() {
+        return clientLongitude;
     }
 
-    public void setNetworkLongitude(String networkLongitude) {
-        this.networkLongitude = networkLongitude;
+    public void setClientLongitude(String clientLongitude) {
+        this.clientLongitude = clientLongitude;
     }
 
-    public String getNetwork() {
-        return network;
+    public String getClientAddress() {
+        return clientAddress;
     }
 
-    public void setNetwork(String network) {
-        this.network = network;
+    public void setClientAddress(String clientAddress) {
+        this.clientAddress = clientAddress;
+    }
+
+    public String getClientName() {
+        return clientName;
+    }
+
+    public void setClientName(String clientName) {
+        this.clientName = clientName;
     }
 
     public String getStatus() {
@@ -61,30 +69,11 @@ public class NotificationFirebase {
         this.status = status;
     }
 
-    public String getNetworkAddress() {
-        return networkAddress;
-    }
-
-    public void setNetworkAddress(String networkAddress) {
-        this.networkAddress = networkAddress;
-    }
-
-    public NotificationFirebase(String networkLatitude, String networkLongitude, String networkAddress, String network, String status) {
-        this.networkLatitude = networkLatitude;
-        this.networkLongitude = networkLongitude;
-        this.networkAddress = networkAddress;
-        this.network = network;
+    public NotificationFirebase(String clientLatitude, String clientLongitude, String clientAddress, String clientName, String status) {
+        this.clientLatitude = clientLatitude;
+        this.clientLongitude = clientLongitude;
+        this.clientAddress = clientAddress;
+        this.clientName = clientName;
         this.status = status;
-    }
-
-    @Override
-    public String toString() {
-        return "NotificationFirebase{" +
-                "networkLatitude='" + networkLatitude + '\'' +
-                ", networkLongitude='" + networkLongitude + '\'' +
-                ", networkAddress='" + networkAddress + '\'' +
-                ", network='" + network + '\'' +
-                ", status='" + status + '\'' +
-                '}';
     }
 }
