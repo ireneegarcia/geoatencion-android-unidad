@@ -18,6 +18,7 @@ import android.widget.TextView;
 import com.example.irene.geoatencionunidad.Model.Alarma;
 import com.example.irene.geoatencionunidad.Model.Alarmas;
 import com.example.irene.geoatencionunidad.Model.Logs;
+import com.example.irene.geoatencionunidad.Model.Networks;
 import com.example.irene.geoatencionunidad.Remote.APIService;
 
 import java.util.ArrayList;
@@ -37,6 +38,7 @@ public class AlarmFragment extends Fragment {
     Context c;
     ArrayList<Alarmas> alarma;
     //List<Alarma> alarma;
+    Networks networks;
 
     public AlarmFragment() {
         // Required empty public constructor
@@ -50,14 +52,47 @@ public class AlarmFragment extends Fragment {
         mView = inflater.inflate(R.layout.fragment_alarm, container, false);
         c = (Context)getActivity();
 
-        obtenerAlarmas();
-
+        obtenerUnidad();
 
         return mView;
     }
 
+    public void obtenerUnidad(){
+
+        //id del usuario logueado
+        SharedPreferences settings = c.getSharedPreferences("perfil", c.MODE_PRIVATE);
+        final String mId = settings.getString("id", null);
+
+        APIService.Factory.getIntance().listNetworks().enqueue(new Callback<List<Networks>>() {
+            @Override
+            public void onResponse(Call<List<Networks>> call, Response<List<Networks>> response) {
+
+                //code == 200
+                if(response.isSuccessful()) {
+                    Log.d("my tag", "onResponse: todo fino");
+                    for (int i = 0; i< response.body().size(); i++){
+                        // si la unidad pertenece al usuario
+                        if(response.body().get(i).getServiceUser().equals(mId)){
+                            networks = response.body().get(i);
+                        }
+                    }
+                    obtenerAlarmas();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<Networks>> call, Throwable t){
+                //
+                Log.d("myTag", "This is my message on failure " + call.request().url());
+                Log.d("myTag", "This is my message on failure " + t.toString());
+            }
+        });
+
+
+    }
     public void obtenerAlarmas(){
 
+        alarma = new ArrayList<>();
         APIService.Factory.getIntance().listAlarms().enqueue(new Callback<List<Alarmas>>() {
 
             @Override
@@ -66,7 +101,16 @@ public class AlarmFragment extends Fragment {
 
                 if(response.isSuccessful()) {
 
-                    filtrado(response.body());
+                    for (int i = 0; i< response.body().size(); i++){
+                        // si la alarma pertenece al usuario
+                        if(response.body().get(i).getNetwork().equals(networks.get_id())){
+                            alarma.add(response.body().get(i));
+                        }
+                    }
+
+                    statusAtencion();
+
+                    //filtrado(response.body());
 
                     //Logs.d("AlarmaFragment", "--->on reponse " + response.body().toString());
                     //Logs.d("myTag", "--->on reponse " + call.request().url());
@@ -82,24 +126,6 @@ public class AlarmFragment extends Fragment {
 
     }
 
-    public void filtrado(List<Alarmas> alarmasResponse){
-
-        alarma = new ArrayList<>();
-
-        //id del usuario logueado
-        SharedPreferences settings = getActivity().getSharedPreferences("perfil", c.MODE_PRIVATE);
-        final String mId = settings.getString("id", null);
-
-        for (int i = 0; i< alarmasResponse.size(); i++){
-            // si la alarma pertenece al usuario
-            if(alarmasResponse.get(i).getUser().getId().equals(mId)){
-                alarma.add(alarmasResponse.get(i));
-            }
-        }
-
-        //Logs.d("AlarmaFragment", "" + alarma.toString());
-        statusAtencion();
-    }
     public void actualizarAlarma(){
 
         Alarma enviarAlarma = new Alarma(alarma.get(0).get_id(),
@@ -178,75 +204,29 @@ public class AlarmFragment extends Fragment {
                 actualizarAlarma();
             }
         });
-        Log.d("AlarmaFragment", "statusAtencion: "+alarma.get(0));
+        //Log.d("AlarmaFragment", "statusAtencion: "+alarma.get(0));
 
-        if (alarma.get(0).getStatus().equals("esperando")){
-            status.setText("Alarma enviada de manera exitosa");
-            imageStatusA.setVisibility(View.GONE);
-            imageStatusP.setVisibility(View.VISIBLE);
-            message.setVisibility(View.VISIBLE);
-            cancelar.setVisibility(View.VISIBLE);
-        }
-        else if (alarma.get(0).getStatus().equals("en atencion")){
-            status.setText("Alarma enviada de manera exitosa");
-            status1.setText("Unidad enviada");
+        if (alarma.size() == 0) {
+            status.setText("Sin asignación de atención");
+            status1.setVisibility(View.GONE);
             imageStatusA.setVisibility(View.GONE);
             imageStatusP.setVisibility(View.VISIBLE);
             imageStatusA1.setVisibility(View.GONE);
-            imageStatusP1.setVisibility(View.VISIBLE);
-            message.setVisibility(View.VISIBLE);
-            cancelar.setVisibility(View.VISIBLE);
-        }
-        else if (alarma.get(0).getStatus().equals("cancelado")){
-            status.setText("Alarma enviada de manera exitosa");
-            status1.setText("Atencion cancelada");
-            imageStatusA.setVisibility(View.GONE);
-            imageStatusP.setVisibility(View.VISIBLE);
-            imageStatusA1.setVisibility(View.GONE);
-            imageStatusP1.setVisibility(View.VISIBLE);
+            imageStatusP1.setVisibility(View.GONE);
             row.setVisibility(View.GONE);
             message.setVisibility(View.VISIBLE);
-        }
-        else if (alarma.get(0).getStatus().equals("cancelado por el cliente")){
-            status.setText("Alarma enviada de manera exitosa");
-            status1.setText("Usted ha cancelado esta alarma");
-            imageStatusA.setVisibility(View.GONE);
-            imageStatusP.setVisibility(View.VISIBLE);
-            imageStatusA1.setVisibility(View.GONE);
-            imageStatusP1.setVisibility(View.VISIBLE);
-            row.setVisibility(View.GONE);
-            message.setVisibility(View.VISIBLE);
-        }
-        else if (alarma.get(0).getStatus().equals("rechazado")){
-            status.setText("Alarma enviada de manera exitosa");
-            status1.setText("Solicitud rechazada");
-            imageStatusA.setVisibility(View.GONE);
-            imageStatusP.setVisibility(View.VISIBLE);
-            imageStatusA1.setVisibility(View.GONE);
-            imageStatusP1.setVisibility(View.VISIBLE);
-            row.setVisibility(View.GONE);
-            message.setVisibility(View.VISIBLE);
-        }
-        else if (alarma.get(0).getStatus().equals("atendido")){
-
-            status.setText("Alarma atendida de manera exitosa");
-            imageStatusA.setVisibility(View.GONE);
-            imageStatusP.setVisibility(View.VISIBLE);
-
-
-            row.setVisibility(View.GONE);
-            message.setVisibility(View.VISIBLE);
-
-            if (alarma.get(0).getRating().equals("sin calificar")){
-                status1.setText("Pendiente por calificación");
-                imageStatusA1.setVisibility(View.VISIBLE);
-                imageStatusP1.setVisibility(View.GONE);
-            }else{
-                status1.setText("Gracias por su calificación");
+        }else{
+            if (alarma.get(0).getStatus().equals("en atencion")){
+                status.setText("Alarma recibida de manera exitosa");
+                status1.setText("Atención en proceso");
+                status2.setText("Esperando culminación de atención");
+                imageStatusA.setVisibility(View.GONE);
+                imageStatusP.setVisibility(View.VISIBLE);
                 imageStatusA1.setVisibility(View.GONE);
                 imageStatusP1.setVisibility(View.VISIBLE);
+                message.setVisibility(View.VISIBLE);
+                cancelar.setVisibility(View.VISIBLE);
             }
-
         }
 
     }

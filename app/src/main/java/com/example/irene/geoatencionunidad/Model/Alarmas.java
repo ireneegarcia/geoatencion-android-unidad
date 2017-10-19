@@ -42,6 +42,9 @@ public class Alarmas {
     @SerializedName("icon")
     @Expose
     private String icon;
+    @SerializedName("network")
+    @Expose
+    private String network;
 
     public String getOrganism() {
         return organism;
@@ -129,6 +132,14 @@ public class Alarmas {
 
     public void setIcon(String icon) {
         this.icon = icon;
+    }
+
+    public String getNetwork() {
+        return network;
+    }
+
+    public void setNetwork(String network) {
+        this.network = network;
     }
 
     @Override

@@ -4,7 +4,6 @@ package com.example.irene.geoatencionunidad;
 import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -25,7 +24,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -36,7 +34,6 @@ import android.widget.TextView;
 
 import com.example.irene.geoatencionunidad.Model.Alarma;
 import com.example.irene.geoatencionunidad.Model.Alarmas;
-import com.example.irene.geoatencionunidad.Model.CategoriaAdapterListView;
 import com.example.irene.geoatencionunidad.Model.CategoriaServicios;
 import com.example.irene.geoatencionunidad.Model.Logs;
 import com.example.irene.geoatencionunidad.Model.NotificationFirebase;
@@ -63,9 +60,6 @@ import java.util.Locale;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-
-import static com.example.irene.geoatencionunidad.Model.CategoriaAdapterListView.organismos;
-import static com.example.irene.geoatencionunidad.Model.CategoriaAdapterListView.resultado;
 
 
 /**
@@ -500,68 +494,25 @@ public class MapsFragment extends Fragment {
 
         categorias = (ListView) layout.findViewById(R.id.listViewCategorias);
 
-        if (statusAtencion.equals("") || statusAtencion.equals("cancelado por el cliente")) {
+        if (statusAtencion.equals("cancelado por el cliente")) {
 
             googleMap.clear();
-            CategoriaAdapterListView adapter = new CategoriaAdapterListView(c, mId, categoriaServicio, solicitudes);
-            categorias.setAdapter(adapter);
-
-            categorias.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                @Override
-                public void onItemClick(AdapterView<?> arg0, View arg1, int position, long id) {
-
-                    Log.i("posicion", "posicion " + position);
-                    categorias.setVisibility(View.GONE);
-                    message.setVisibility(View.VISIBLE);
-                    status.setText("Enviando alarma");
-                    final CategoriaServicios posActual = resultado.get(position);
-                    Log.d("categoria", posActual.getCategory());
-                    APIService.Factory.getIntance()
-                            .createAlarm(posActual.getId(),
-                                    "esperando",
-                                    mCurrentLocation.getLatitude()+"",
-                                    mCurrentLocation.getLongitude()+"",
-                                    address,
-                                    organismos.get(position),
-                                    mId)
-
-                            .enqueue(new Callback<Alarma>() {
-                                @Override
-                                public void onResponse(Call<Alarma> call, Response<Alarma> response) {
-
-                                    //code == 200
-                                    if(response.isSuccessful()) {
-                                        Log.d("my tag", "onResponse: todo fino");
-                                        status.setText("Alarma enviada de manera exitosa");
-                                        imageStatusA.setVisibility(View.GONE);
-                                        imageStatusP.setVisibility(View.VISIBLE);
-                                        progreso.setVisibility(View.GONE);
-                                    }
-                                }
-
-                                @Override
-                                public void onFailure(Call<Alarma> call, Throwable t){
-                                    //
-                                    Log.d("myTag", "This is my message on failure " + call.request().url());
-                                    status.setText("Error al enviar la alarma");
-                                }
-                            });
-                }
-            });
+            status.setText("Alarma recibida de manera exitosa");
+            status1.setText("Atención cancelada por el cliente");
+            imageStatusA.setVisibility(View.GONE);
+            imageStatusP.setVisibility(View.VISIBLE);
+            imageStatusA1.setVisibility(View.GONE);
+            imageStatusP1.setVisibility(View.VISIBLE);
+            progreso.setVisibility(View.GONE);
+            row.setVisibility(View.GONE);
+            categorias.setVisibility(View.GONE);
+            message.setVisibility(View.VISIBLE);
         }
         else{
-            if (statusAtencion.equals("esperando")){
-                status.setText("Alarma enviada de manera exitosa");
-                imageStatusA.setVisibility(View.GONE);
-                imageStatusP.setVisibility(View.VISIBLE);
-                progreso.setVisibility(View.GONE);
-                categorias.setVisibility(View.GONE);
-                cancelar.setVisibility(View.VISIBLE);
-                message.setVisibility(View.VISIBLE);
-            }
-            else if (statusAtencion.equals("en atencion")){
-                status.setText("Alarma enviada de manera exitosa");
-                status1.setText("Unidad enviada");
+
+            if (statusAtencion.equals("en atencion")){
+                status.setText("Alarma recibida de manera exitosa");
+                status1.setText("Atención en proceso");
                 imageStatusA.setVisibility(View.GONE);
                 imageStatusP.setVisibility(View.VISIBLE);
                 imageStatusA1.setVisibility(View.GONE);
@@ -571,9 +522,9 @@ public class MapsFragment extends Fragment {
                 message.setVisibility(View.VISIBLE);
                 cancelar.setVisibility(View.VISIBLE);
             }
-            else if (statusAtencion.equals("cancelado")){
-                status.setText("Alarma enviada de manera exitosa");
-                status1.setText("Atencion cancelada");
+            else if (statusAtencion.equals("cancelado por el operador")){
+                status.setText("Alarma recibida de manera exitosa");
+                status1.setText("Atencion cancelada por el operador");
                 imageStatusA.setVisibility(View.GONE);
                 imageStatusP.setVisibility(View.VISIBLE);
                 imageStatusA1.setVisibility(View.GONE);
@@ -583,68 +534,6 @@ public class MapsFragment extends Fragment {
                 categorias.setVisibility(View.GONE);
                 message.setVisibility(View.VISIBLE);
                 googleMap.clear();
-                builder.setPositiveButton("Nueva alarma", new DialogInterface.OnClickListener() {
-
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-
-                        nuevaAlerta();
-                        //dialog.cancel();
-                    }}
-                );
-
-            }
-            else if (statusAtencion.equals("rechazado")){
-                status.setText("Alarma enviada de manera exitosa");
-                status1.setText("Solicitud rechazada");
-                imageStatusA.setVisibility(View.GONE);
-                imageStatusP.setVisibility(View.VISIBLE);
-                imageStatusA1.setVisibility(View.GONE);
-                imageStatusP1.setVisibility(View.VISIBLE);
-                progreso.setVisibility(View.GONE);
-                row.setVisibility(View.GONE);
-                categorias.setVisibility(View.GONE);
-                message.setVisibility(View.VISIBLE);
-                builder.setPositiveButton("Nueva alarma", new DialogInterface.OnClickListener() {
-
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-
-                        nuevaAlerta();
-                        //dialog.cancel();
-                    }}
-                );
-            }
-            else if (statusAtencion.equals("atendido")){
-
-                status.setText("Alarma atendida de manera exitosa");
-                imageStatusA.setVisibility(View.GONE);
-                imageStatusP.setVisibility(View.VISIBLE);
-                progreso.setVisibility(View.GONE);
-                row.setVisibility(View.GONE);
-                categorias.setVisibility(View.GONE);
-                message.setVisibility(View.VISIBLE);
-
-                if (alarma.get(0).getRating().equals("sin calificar")){
-                    status1.setText("Pendiente por calificación");
-                    imageStatusA1.setVisibility(View.VISIBLE);
-                    imageStatusP1.setVisibility(View.GONE);
-                }else{
-                    status1.setText("Gracias por su calificación");
-                    imageStatusA1.setVisibility(View.GONE);
-                    imageStatusP1.setVisibility(View.VISIBLE);
-                }
-
-                builder.setPositiveButton("Nueva alarma", new DialogInterface.OnClickListener() {
-
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-
-                        nuevaAlerta();
-                        //dialog.cancel();
-                    }}
-                );
-
             }
         }
         return builder.create();
@@ -707,7 +596,7 @@ public class MapsFragment extends Fragment {
             return true;
         }
 
-        /*@Override
+        @Override
         protected void onPostExecute(final Boolean success) {
             if (noti.getStatus().equals("en atencion")) {
                 MarkerOptions options = new MarkerOptions();
@@ -716,12 +605,12 @@ public class MapsFragment extends Fragment {
                 options.icon(BitmapDescriptorFactory.fromBitmap(iconFactory.makeIcon(DateFormat.getTimeInstance().format(new Date()))));
                 options.anchor(iconFactory.getAnchorU(), iconFactory.getAnchorV());
                 //options.title("Mi posición actual");
-                options.snippet(noti.getNetworkAddress());
+                options.snippet(noti.getClientAddress());
 
-                LatLng currentLatLng = new LatLng(Double.parseDouble(noti.getNetworkLatitude()), Double.parseDouble(noti.getNetworkLongitude()));
+                LatLng currentLatLng = new LatLng(Double.parseDouble(noti.getClientLatitude()), Double.parseDouble(noti.getClientLongitude()));
                 options.position(currentLatLng);
                 Marker mapMarker = googleMap.addMarker(options);
-                mapMarker.setTitle(noti.getNetwork());
+                mapMarker.setTitle(noti.getClientName());
                 Log.d("my tag", "Marcador añadido.............................");
                 // For zooming automatically to the location of the marker
                 googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng,
@@ -732,7 +621,7 @@ public class MapsFragment extends Fragment {
             //notificacionId = (noti.getI);
             notificacionUbicacion = (noti.getStatus());
             //createSimpleDialog(notificacion);
-        }*/
+        }
 
         @Override
         protected void onCancelled() {
