@@ -47,6 +47,9 @@ public interface APIService {
     @GET("api/networks")
     Call<List<Networks>> listNetworks();
 
+    @GET("/api/users/{userId}")
+    Call<Users> getClient(@Path("userId") String userId);
+
     @PUT("api/networks/{networkId}")
     Call<Networks> updateNetwork(@Path("networkId") String networkId,
                                  @Body Networks network);

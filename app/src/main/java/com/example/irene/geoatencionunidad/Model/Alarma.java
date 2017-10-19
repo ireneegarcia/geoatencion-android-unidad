@@ -42,6 +42,17 @@ public class Alarma {
     @SerializedName("icon")
     @Expose
     private String icon;
+    @SerializedName("network")
+    @Expose
+    private String network;
+
+    public String getNetwork() {
+        return network;
+    }
+
+    public void setNetwork(String network) {
+        this.network = network;
+    }
 
     public String getOrganism() {
         return organism;
@@ -148,7 +159,12 @@ public class Alarma {
                 '}';
     }
 
-    public Alarma(String _id, String user, String categoryService, String status, String latitude, String longitude, String address, String created, String rating, String organism, String icon) {
+    public Alarma(String _id, String user,
+                  String categoryService, String status,
+                  String latitude, String longitude,
+                  String address, String created,
+                  String rating, String organism,
+                  String icon, String network) {
         this._id = _id;
         this.user = user;
         this.categoryService = categoryService;
@@ -160,5 +176,6 @@ public class Alarma {
         this.rating = rating;
         this.organism = organism;
         this.icon = icon;
+        this.network = network;
     }
 }

@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 
@@ -19,6 +20,7 @@ import com.example.irene.geoatencionunidad.Model.Alarma;
 import com.example.irene.geoatencionunidad.Model.Alarmas;
 import com.example.irene.geoatencionunidad.Model.Logs;
 import com.example.irene.geoatencionunidad.Model.Networks;
+import com.example.irene.geoatencionunidad.Model.Users;
 import com.example.irene.geoatencionunidad.Remote.APIService;
 
 import java.util.ArrayList;
@@ -39,6 +41,7 @@ public class AlarmFragment extends Fragment {
     ArrayList<Alarmas> alarma;
     //List<Alarma> alarma;
     Networks networks;
+    Users user;
 
     public AlarmFragment() {
         // Required empty public constructor
@@ -108,7 +111,12 @@ public class AlarmFragment extends Fragment {
                         }
                     }
 
-                    statusAtencion();
+                    if (alarma.size() != 0) {
+                        obtenerCliente();
+                    }else{
+                        statusAtencion();
+                    }
+
 
                     //filtrado(response.body());
 
@@ -126,6 +134,33 @@ public class AlarmFragment extends Fragment {
 
     }
 
+    public void obtenerCliente(){
+
+        APIService.Factory.getIntance().getClient(alarma.get(0).getUser().getId()).enqueue(new Callback<Users>() {
+
+            @Override
+            public void onResponse(Call<Users> call, Response<Users> response) {
+                //Logs.d("myTag", "--->bien " + call.request().url());
+
+                if(response.isSuccessful()) {
+
+                    user = response.body();
+                    statusAtencion();
+
+                    //filtrado(response.body());
+
+                    Log.d("AlarmaFragment", "--->on reponse " + response.body().toString());
+                    //Logs.d("myTag", "--->on reponse " + call.request().url());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Users> call, Throwable t) {
+                Log.d("AlarmaFragment", "This is my message on failure " + call.request().url());
+                Log.d("myTag", "This is my message on failure " + t.toString());
+            }
+        });
+    }
     public void actualizarAlarma(){
 
         Alarma enviarAlarma = new Alarma(alarma.get(0).get_id(),
@@ -138,7 +173,8 @@ public class AlarmFragment extends Fragment {
                 alarma.get(0).getCreated(),
                 alarma.get(0).getRating(),
                 alarma.get(0).getOrganism(),
-                "/modules/panels/client/img/cancelbyclient.png");
+                "/modules/panels/client/img/cancelbyclient.png",
+                "");
 
         // Actualización de alarma
 
@@ -154,6 +190,27 @@ public class AlarmFragment extends Fragment {
 
             @Override
             public void onFailure(Call<Alarma> call, Throwable t){
+                //
+                Log.d("myTag", "This is my message on failure " + call.request().url());
+            }
+        });
+
+        networks.setStatus("activo");
+
+        // Actualizar la unidad de atencion
+        APIService.Factory.getIntance().updateNetwork(networks.get_id(), networks).enqueue(new Callback<Networks>() {
+            @Override
+            public void onResponse(Call<Networks> call, Response<Networks> response) {
+
+                //code == 200
+                if(response.isSuccessful()) {
+                    Log.d("my tag", "onResponse: todo fino DEL LOG");
+                    obtenerAlarmas();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Networks> call, Throwable t){
                 //
                 Log.d("myTag", "This is my message on failure " + call.request().url());
             }
@@ -198,6 +255,12 @@ public class AlarmFragment extends Fragment {
         final RelativeLayout message = mView.findViewById(R.id.message);
         final Button cancelar = (Button) mView.findViewById(R.id.cancelar);
 
+        final TextView datos_cliente = (TextView) mView.findViewById(R.id.datos_cliente);
+        final TextView nombre = (TextView) mView.findViewById(R.id.nombre);
+        final TextView telefono = (TextView) mView.findViewById(R.id.telefono);
+        final TextView correo = (TextView) mView.findViewById(R.id.email);
+        final TableLayout tabla_cliente = (TableLayout) mView.findViewById(R.id.tabla_cliente);
+
         cancelar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -213,6 +276,7 @@ public class AlarmFragment extends Fragment {
             imageStatusP.setVisibility(View.VISIBLE);
             imageStatusA1.setVisibility(View.GONE);
             imageStatusP1.setVisibility(View.GONE);
+            cancelar.setVisibility(View.GONE);
             row.setVisibility(View.GONE);
             message.setVisibility(View.VISIBLE);
         }else{
@@ -226,6 +290,13 @@ public class AlarmFragment extends Fragment {
                 imageStatusP1.setVisibility(View.VISIBLE);
                 message.setVisibility(View.VISIBLE);
                 cancelar.setVisibility(View.VISIBLE);
+
+                tabla_cliente.setVisibility(View.VISIBLE);
+                datos_cliente.setVisibility(View.VISIBLE);
+                datos_cliente.setText("Datos del cliente "+user.getFirstName());
+                nombre.setText(user.getDisplayName());
+                telefono.setText(user.getPhone());
+                correo.setText(user.getEmail());
             }
         }
 

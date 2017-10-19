@@ -126,6 +126,7 @@ public class NetworkFragment extends Fragment {
                 //code == 200
                 if(response.isSuccessful()) {
                     Log.d("my tag", "onResponse: todo fino");
+                    obtenerUnidad();
                 }
             }
 
@@ -159,7 +160,7 @@ public class NetworkFragment extends Fragment {
             }
         });
 
-        obtenerUnidad();
+
     }
 
 }

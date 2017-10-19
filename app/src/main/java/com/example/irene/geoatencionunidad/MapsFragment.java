@@ -36,6 +36,7 @@ import com.example.irene.geoatencionunidad.Model.Alarma;
 import com.example.irene.geoatencionunidad.Model.Alarmas;
 import com.example.irene.geoatencionunidad.Model.CategoriaServicios;
 import com.example.irene.geoatencionunidad.Model.Logs;
+import com.example.irene.geoatencionunidad.Model.Networks;
 import com.example.irene.geoatencionunidad.Model.NotificationFirebase;
 import com.example.irene.geoatencionunidad.Model.Solicitudes;
 import com.example.irene.geoatencionunidad.Remote.APIService;
@@ -80,6 +81,7 @@ public class MapsFragment extends Fragment {
     List<CategoriaServicios> categoriaServicio;
     List<Solicitudes> solicitudes;
     ArrayList<Alarmas> alarma = new ArrayList<>();
+    Networks networks;
     MapView mMapView;
     private static GoogleMap googleMap;
 
@@ -109,7 +111,7 @@ public class MapsFragment extends Fragment {
         c = (Context)getActivity();
         cp = (Context)getActivity();
 
-        obtenerAlarmas();
+        obtenerUnidad();
         mMapView = (MapView) mView.findViewById(R.id.mapView);
         mMapView.onCreate(savedInstanceState);
 
@@ -356,30 +358,61 @@ public class MapsFragment extends Fragment {
         });
     }
 
-    public void obtenerAlarmas(){
+    public void obtenerUnidad(){
+
         //id del usuario logueado
-        SharedPreferences settings = getActivity().getSharedPreferences("perfil", c.MODE_PRIVATE);
+        SharedPreferences settings = c.getSharedPreferences("perfil", c.MODE_PRIVATE);
         final String mId = settings.getString("id", null);
 
+        APIService.Factory.getIntance().listNetworks().enqueue(new Callback<List<Networks>>() {
+            @Override
+            public void onResponse(Call<List<Networks>> call, Response<List<Networks>> response) {
+
+                //code == 200
+                if(response.isSuccessful()) {
+                    Log.d("my tag", "onResponse: todo fino");
+                    for (int i = 0; i< response.body().size(); i++){
+                        // si la unidad pertenece al usuario
+                        if(response.body().get(i).getServiceUser().equals(mId)){
+                            networks = response.body().get(i);
+                        }
+                    }
+                    obtenerAlarmas();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<Networks>> call, Throwable t){
+                //
+                Log.d("myTag", "This is my message on failure " + call.request().url());
+                Log.d("myTag", "This is my message on failure " + t.toString());
+            }
+        });
+
+    }
+
+    public void obtenerAlarmas(){
+
+        alarma = new ArrayList<>();
         APIService.Factory.getIntance().listAlarms().enqueue(new Callback<List<Alarmas>>() {
 
             @Override
             public void onResponse(Call<List<Alarmas>> call, Response<List<Alarmas>> response) {
-                //Log.d("myTag", "--->bien " + call.request().url());
+                //Logs.d("myTag", "--->bien " + call.request().url());
 
                 if(response.isSuccessful()) {
 
-                    //filtrado(response.body());
                     for (int i = 0; i< response.body().size(); i++){
                         // si la alarma pertenece al usuario
-                        if(response.body().get(i).getUser().getId().equals(mId)){
+                        if(response.body().get(i).getNetwork().equals(networks.get_id())){
                             alarma.add(response.body().get(i));
-
                         }
                     }
 
-                    //Log.d("AlarmaFragment", "--->on reponse " + response.body().toString());
-                    //Log.d("myTag", "--->on reponse " + call.request().url());
+                    //filtrado(response.body());
+
+                    //Logs.d("AlarmaFragment", "--->on reponse " + response.body().toString());
+                    //Logs.d("myTag", "--->on reponse " + call.request().url());
                 }
             }
 
@@ -389,6 +422,7 @@ public class MapsFragment extends Fragment {
                 Log.d("myTag", "This is my message on failure " + t.toString());
             }
         });
+
     }
 
     public void actualizarAlarma(){
@@ -396,14 +430,15 @@ public class MapsFragment extends Fragment {
         Alarma enviarAlarma = new Alarma(alarma.get(0).get_id(),
                 alarma.get(0).getUser().getId(),
                 alarma.get(0).getCategoryService(),
-                "cancelado por el cliente",
+                "cancelado por la unidad",
                 alarma.get(0).getLatitude(),
                 alarma.get(0).getLongitude(),
                 alarma.get(0).getAddress(),
                 alarma.get(0).getCreated(),
                 alarma.get(0).getRating(),
                 alarma.get(0).getOrganism(),
-                "/modules/panels/client/img/cancelbyclient.png");
+                "/modules/panels/client/img/cancelbynetwork.png",
+                "");
 
         // Actualización de alarma
 
@@ -414,6 +449,7 @@ public class MapsFragment extends Fragment {
                 //code == 200
                 if(response.isSuccessful()) {
                     Log.d("my tag", "onResponse: todo fino");
+                    nuevaAlerta();
                 }
             }
 
@@ -424,9 +460,29 @@ public class MapsFragment extends Fragment {
             }
         });
 
+        networks.setStatus("activo");
+
+        // Actualizar la unidad de atencion
+        APIService.Factory.getIntance().updateNetwork(networks.get_id(), networks).enqueue(new Callback<Networks>() {
+            @Override
+            public void onResponse(Call<Networks> call, Response<Networks> response) {
+
+                //code == 200
+                if(response.isSuccessful()) {
+                    Log.d("my tag", "onResponse: todo fino DEL LOG");
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Networks> call, Throwable t){
+                //
+                Log.d("myTag", "This is my message on failure " + call.request().url());
+            }
+        });
+
         // Creación de log
         APIService.Factory.getIntance().createLog(
-                "La solicitud de atención ha sido cancelada por el cliente",
+                "La solicitud de atención ha sido cancelada por la unidad",
                 alarma.get(0).get_id(),
                 "",
                 alarma.get(0).getUser().getId(),
@@ -456,7 +512,8 @@ public class MapsFragment extends Fragment {
     public AlertDialog createSimpleDialog(String statusAtencion) {
 
         Log.d("nuevaAlerta: ", "nuevaAlerta: "+alarma.size());
-        if (alarma.size() != 0){
+
+        if (alarma.size() != 0) {
             statusAtencion = alarma.get(0).getStatus();
         }
         final AlertDialog.Builder builder = new AlertDialog.Builder(cp);
@@ -494,6 +551,7 @@ public class MapsFragment extends Fragment {
 
         categorias = (ListView) layout.findViewById(R.id.listViewCategorias);
 
+
         if (statusAtencion.equals("cancelado por el cliente")) {
 
             googleMap.clear();
@@ -513,6 +571,7 @@ public class MapsFragment extends Fragment {
             if (statusAtencion.equals("en atencion")){
                 status.setText("Alarma recibida de manera exitosa");
                 status1.setText("Atención en proceso");
+                status2.setText("Esperando culminación de atención");
                 imageStatusA.setVisibility(View.GONE);
                 imageStatusP.setVisibility(View.VISIBLE);
                 imageStatusA1.setVisibility(View.GONE);
@@ -534,8 +593,21 @@ public class MapsFragment extends Fragment {
                 categorias.setVisibility(View.GONE);
                 message.setVisibility(View.VISIBLE);
                 googleMap.clear();
+            }else{
+                status.setText("Sin asignación de atención");
+                status1.setVisibility(View.GONE);
+                imageStatusA.setVisibility(View.GONE);
+                imageStatusP.setVisibility(View.VISIBLE);
+                imageStatusA1.setVisibility(View.GONE);
+                imageStatusP1.setVisibility(View.GONE);
+                row.setVisibility(View.GONE);
+                message.setVisibility(View.VISIBLE);
+                progreso.setVisibility(View.GONE);
+                googleMap.clear();
             }
         }
+
+
         return builder.create();
     }
 
