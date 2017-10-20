@@ -143,6 +143,21 @@
             android:textStyle="bold"
             android:visibility="gone" />
 
+        <Button
+            android:id="@+id/atendido"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/cancelar"
+            android:layout_marginEnd="22dp"
+            android:layout_marginRight="22dp"
+            android:layout_toLeftOf="@+id/cancelar"
+            android:layout_toStartOf="@+id/cancelar"
+            android:background="@drawable/button_border_atendido"
+            android:text="Atendido"
+            android:textColor="@android:color/background_light"
+            android:textStyle="bold"
+            android:visibility="gone" />
+
         <TextView
             android:id="@+id/datos_cliente"
             android:layout_width="wrap_content"
@@ -226,6 +241,8 @@
             </TableRow>
 
         </TableLayout>
+
+
     </RelativeLayout>
 
 </FrameLayout>

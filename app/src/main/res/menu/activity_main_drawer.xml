@@ -19,10 +19,6 @@
             android:id="@+id/nav_profile"
             android:icon="@drawable/user"
             android:title="Mi perfil" />
-        <item
-            android:id="@+id/nav_history"
-            android:icon="@drawable/orderhistory"
-            android:title="Historial" />
 
        <!-- <item
             android:id="@+id/nav_log_out"

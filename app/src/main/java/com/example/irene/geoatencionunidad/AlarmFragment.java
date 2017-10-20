@@ -161,19 +161,19 @@ public class AlarmFragment extends Fragment {
             }
         });
     }
-    public void actualizarAlarma(){
+    public void actualizarAlarma(String status, String icon, String textLog){
 
         Alarma enviarAlarma = new Alarma(alarma.get(0).get_id(),
                 alarma.get(0).getUser().getId(),
                 alarma.get(0).getCategoryService(),
-                "cancelado por el cliente",
+                status,
                 alarma.get(0).getLatitude(),
                 alarma.get(0).getLongitude(),
                 alarma.get(0).getAddress(),
                 alarma.get(0).getCreated(),
                 alarma.get(0).getRating(),
                 alarma.get(0).getOrganism(),
-                "/modules/panels/client/img/cancelbyclient.png",
+                icon,
                 "");
 
         // Actualización de alarma
@@ -218,7 +218,7 @@ public class AlarmFragment extends Fragment {
 
         // Creación de log
         APIService.Factory.getIntance().createLog(
-                "La solicitud de atención ha sido cancelada por el cliente",
+                textLog,
                 alarma.get(0).get_id(),
                 "",
                 alarma.get(0).getUser().getId(),
@@ -254,6 +254,7 @@ public class AlarmFragment extends Fragment {
         final TableRow row = (TableRow) mView.findViewById(R.id.row_status);
         final RelativeLayout message = mView.findViewById(R.id.message);
         final Button cancelar = (Button) mView.findViewById(R.id.cancelar);
+        final Button atendido = (Button) mView.findViewById(R.id.atendido);
 
         final TextView datos_cliente = (TextView) mView.findViewById(R.id.datos_cliente);
         final TextView nombre = (TextView) mView.findViewById(R.id.nombre);
@@ -264,7 +265,18 @@ public class AlarmFragment extends Fragment {
         cancelar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                actualizarAlarma();
+                actualizarAlarma("cancelado por el cliente",
+                        "/modules/panels/client/img/cancelbyclient.png",
+                        "La solicitud de atención ha sido cancelada por el cliente");
+            }
+        });
+
+        atendido.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                actualizarAlarma("atendido",
+                        "/modules/panels/client/img/done.png",
+                        "La solicitud de atención ha sido atendido exitosamente por la unidad: "+networks.getCarCode());
             }
         });
         //Log.d("AlarmaFragment", "statusAtencion: "+alarma.get(0));
@@ -277,6 +289,9 @@ public class AlarmFragment extends Fragment {
             imageStatusA1.setVisibility(View.GONE);
             imageStatusP1.setVisibility(View.GONE);
             cancelar.setVisibility(View.GONE);
+            atendido.setVisibility(View.GONE);
+            tabla_cliente.setVisibility(View.GONE);
+            datos_cliente.setVisibility(View.GONE);
             row.setVisibility(View.GONE);
             message.setVisibility(View.VISIBLE);
         }else{
@@ -290,6 +305,7 @@ public class AlarmFragment extends Fragment {
                 imageStatusP1.setVisibility(View.VISIBLE);
                 message.setVisibility(View.VISIBLE);
                 cancelar.setVisibility(View.VISIBLE);
+                atendido.setVisibility(View.VISIBLE);
 
                 tabla_cliente.setVisibility(View.VISIBLE);
                 datos_cliente.setVisibility(View.VISIBLE);

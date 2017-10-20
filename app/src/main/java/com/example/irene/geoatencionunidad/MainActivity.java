@@ -125,12 +125,6 @@ public class MainActivity extends AppCompatActivity
                     .replace(R.id.fragment, fragment)
                     .commit();
 
-        } else if (id == R.id.nav_history) {
-            Fragment fragment = new HistoryFragment();
-            getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.fragment, fragment)
-                    .commit();
-
         }else if (id == R.id.nav_map) {
             Fragment fragment = new MapsFragment();
             getSupportFragmentManager().beginTransaction()

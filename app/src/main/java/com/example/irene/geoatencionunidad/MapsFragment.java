@@ -116,7 +116,7 @@ public class MapsFragment extends Fragment {
         mMapView.onCreate(savedInstanceState);
 
         mMapView.onResume(); // needed to get the map to display immediately
-        listarCategorias();
+        // listarCategorias();
         FloatingActionButton fab = (FloatingActionButton) mView.findViewById(R.id.request);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -246,6 +246,7 @@ public class MapsFragment extends Fragment {
             }
             if (!notificacionUbicacion.equals("esperando") && !notificacionUbicacion.equals("en atencion")) {
                 googleMap.clear();
+                obtenerAlarmas();
                 loc.getLatitude();
                 loc.getLongitude();
                 mCurrentLocation = loc;
@@ -313,7 +314,7 @@ public class MapsFragment extends Fragment {
         mMapView.onLowMemory();
     }
 
-    public void listarCategorias(){
+    /*public void listarCategorias(){
 
         // Log.d("myTag", "API Solicitudes");
         APIService.Factory.getIntance().listSolicituds().enqueue(new Callback<List<Solicitudes>>() {
@@ -356,7 +357,7 @@ public class MapsFragment extends Fragment {
                 // Log.d("myTag", "This is my message on failure " + t.toString());
             }
         });
-    }
+    }*/
 
     public void obtenerUnidad(){
 
@@ -375,6 +376,7 @@ public class MapsFragment extends Fragment {
                         // si la unidad pertenece al usuario
                         if(response.body().get(i).getServiceUser().equals(mId)){
                             networks = response.body().get(i);
+
                         }
                     }
                     obtenerAlarmas();
@@ -406,6 +408,24 @@ public class MapsFragment extends Fragment {
                         // si la alarma pertenece al usuario
                         if(response.body().get(i).getNetwork().equals(networks.get_id())){
                             alarma.add(response.body().get(i));
+
+                            MarkerOptions options = new MarkerOptions();
+                            IconGenerator iconFactory = new IconGenerator(cp);
+                            iconFactory.setStyle(IconGenerator.STYLE_BLUE);
+                            options.icon(BitmapDescriptorFactory.fromBitmap(iconFactory.makeIcon(DateFormat.getTimeInstance().format(new Date()))));
+                            options.anchor(iconFactory.getAnchorU(), iconFactory.getAnchorV());
+                            //options.title("Mi posición actual");
+                            options.snippet(response.body().get(i).getAddress());
+
+                            LatLng currentLatLng = new LatLng(Double.parseDouble(response.body().get(i).getLatitude()), Double.parseDouble(response.body().get(i).getLongitude()));
+                            options.position(currentLatLng);
+                            Marker mapMarker = googleMap.addMarker(options);
+                            mapMarker.setTitle(response.body().get(i).getUser().getDisplayName());
+                            Log.d("my tag", "Marcador añadido.............................");
+                            // For zooming automatically to the location of the marker
+                            googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng,
+                                    17));
+                            Log.d("my tag", "Zoom hecho.............................");
                         }
                     }
 
