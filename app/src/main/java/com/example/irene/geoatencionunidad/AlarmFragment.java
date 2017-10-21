@@ -107,7 +107,8 @@ public class AlarmFragment extends Fragment {
 
                     for (int i = 0; i< response.body().size(); i++){
                         // si la alarma pertenece al usuario
-                        if(response.body().get(i).getNetwork().equals(networks.get_id())){
+                        if(response.body().get(i).getNetwork().equals(networks.get_id()) &&
+                                !response.body().get(i).getStatus().equals("atendido")  ){
                             alarma.add(response.body().get(i));
                         }
                     }
@@ -175,7 +176,7 @@ public class AlarmFragment extends Fragment {
                 alarma.get(0).getRating(),
                 alarma.get(0).getOrganism(),
                 icon,
-                "");
+                alarma.get(0).getNetwork());
 
         // Actualización de alarma
 
