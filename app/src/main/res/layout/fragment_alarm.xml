@@ -10,7 +10,8 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:padding="10dp">
 
         <RelativeLayout
             android:id="@+id/message"
@@ -43,7 +44,8 @@
                 <TableRow
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:gravity="center_vertical">
+                    android:gravity="center_vertical"
+                    android:visibility="gone">
 
                     <ImageView
                         android:id="@+id/imageViewProcesed"
@@ -70,7 +72,8 @@
                 <TableRow
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:gravity="center_vertical">
+                    android:gravity="center_vertical"
+                    android:visibility="gone">
 
                     <ImageView
                         android:id="@+id/imageViewProcesed1"
@@ -127,117 +130,128 @@
 
         </RelativeLayout>
 
-        <Button
-            android:id="@+id/cancelar"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentRight="true"
-            android:layout_below="@+id/message"
-            android:layout_marginEnd="24dp"
-            android:layout_marginRight="24dp"
-            android:layout_marginTop="11dp"
-            android:background="@drawable/button_border_cancel"
-            android:text="Cancelar"
-            android:textColor="@android:color/background_light"
-            android:textStyle="bold"
-            android:visibility="gone" />
-
-        <Button
-            android:id="@+id/atendido"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignBottom="@+id/cancelar"
-            android:layout_marginEnd="22dp"
-            android:layout_marginRight="22dp"
-            android:layout_toLeftOf="@+id/cancelar"
-            android:layout_toStartOf="@+id/cancelar"
-            android:background="@drawable/button_border_atendido"
-            android:text="Atendido"
-            android:textColor="@android:color/background_light"
-            android:textStyle="bold"
-            android:visibility="gone" />
-
         <TextView
-            android:id="@+id/datos_cliente"
+            android:id="@+id/textView7"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/imageView3"
+            android:layout_below="@+id/message"
+            android:layout_toEndOf="@+id/imageView3"
+            android:layout_toRightOf="@+id/imageView3"
+            android:background="@android:color/holo_blue_dark"
+            android:elevation="0dp"
+            android:fontFamily="sans-serif"
+            android:gravity="center_vertical"
+            android:paddingLeft="20dp"
+            android:text="Datos de usuario"
+            android:textColor="@color/common_google_signin_btn_text_dark_default"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:visibility="gone" />
+
+        <ImageView
+            android:id="@+id/imageView3"
             android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/message"
+            android:background="?attr/actionModeSplitBackground"
+            android:visibility="gone"
+            app:srcCompat="@android:drawable/ic_menu_mylocation" />
+
+        <LinearLayout
+            android:id="@+id/linearLayout"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
-            android:layout_below="@+id/cancelar"
-            android:layout_marginLeft="20sp"
-            android:layout_marginStart="20sp"
-            android:layout_marginTop="24dp"
-            android:text="Datos del cliente"
-            android:textStyle="bold"
-            android:visibility="gone" />
+            android:layout_below="@+id/textView7"
+            android:background="@drawable/button_border_sign_up"
+            android:orientation="vertical"
+            android:padding="10dp"
+            android:visibility="gone">
+
+            <TextView
+                android:id="@+id/textView8"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Nombre:"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/nombre"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="TextView" />
+
+            <TextView
+                android:id="@+id/textView12"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Teléfono:"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/telefono"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="TextView" />
+
+            <TextView
+                android:id="@+id/textView14"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Correo:"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/email"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="TextView" />
+        </LinearLayout>
 
         <TableLayout
-            android:id="@+id/tabla_cliente"
+            android:id="@+id/button_done"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
-            android:layout_below="@+id/datos_cliente"
-            android:layout_marginLeft="20sp"
-            android:layout_marginTop="11dp"
+            android:layout_below="@+id/linearLayout"
+            android:layout_marginTop="5dp"
             android:visibility="gone">
 
             <TableRow
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginBottom="8sp">
+                android:layout_height="match_parent">
 
-                <TextView
-                    android:id="@+id/textView8"
-                    android:layout_width="wrap_content"
+                <Button
+                    android:id="@+id/atendido"
                     android:layout_height="wrap_content"
-                    android:text="Nombre:" />
+                    android:layout_alignBottom="@+id/cancelar"
+                    android:layout_margin="5dp"
+                    android:layout_toLeftOf="@+id/cancelar"
+                    android:layout_toStartOf="@+id/cancelar"
+                    android:layout_weight="0.5"
+                    android:background="@drawable/button_border_atendido"
+                    android:text="Atendido"
+                    android:textColor="@android:color/background_light"
+                    android:textStyle="bold"
+                    android:visibility="visible" />
 
-                <TextView
-                    android:id="@+id/nombre"
-                    android:layout_width="wrap_content"
+                <Button
+                    android:id="@+id/cancelar"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="8sp"
-                    android:text="TextView" />
-            </TableRow>
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_below="@+id/message"
+                    android:layout_margin="5dp"
+                    android:layout_weight="0.5"
+                    android:background="@drawable/button_border_cancel"
+                    android:text="Cancelar"
+                    android:textColor="@android:color/background_light"
+                    android:textStyle="bold"
+                    android:visibility="visible" />
 
-            <TableRow
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginBottom="8sp">
-
-                <TextView
-                    android:id="@+id/textView12"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Teléfono:" />
-
-                <TextView
-                    android:id="@+id/telefono"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="8sp"
-                    android:text="TextView" />
-            </TableRow>
-
-            <TableRow
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginBottom="8sp">
-
-                <TextView
-                    android:id="@+id/textView14"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Correo:" />
-
-                <TextView
-                    android:id="@+id/email"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="8sp"
-                    android:text="TextView" />
             </TableRow>
 
         </TableLayout>

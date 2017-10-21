@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TableLayout;
 import android.widget.TableRow;
@@ -253,14 +254,16 @@ public class AlarmFragment extends Fragment {
         final ImageView imageStatusP3 = (ImageView) mView.findViewById(R.id.imageViewProcesed2);
         final TableRow row = (TableRow) mView.findViewById(R.id.row_status);
         final RelativeLayout message = mView.findViewById(R.id.message);
+        final LinearLayout linearLayout = (LinearLayout) mView.findViewById(R.id.linearLayout);
         final Button cancelar = (Button) mView.findViewById(R.id.cancelar);
         final Button atendido = (Button) mView.findViewById(R.id.atendido);
+        final TableLayout button_done = (TableLayout) mView.findViewById(R.id.button_done);
 
-        final TextView datos_cliente = (TextView) mView.findViewById(R.id.datos_cliente);
+        final TextView textView7 = (TextView) mView.findViewById(R.id.textView7);
+        final ImageView imageView3 = (ImageView) mView.findViewById(R.id.imageView3);
         final TextView nombre = (TextView) mView.findViewById(R.id.nombre);
         final TextView telefono = (TextView) mView.findViewById(R.id.telefono);
         final TextView correo = (TextView) mView.findViewById(R.id.email);
-        final TableLayout tabla_cliente = (TableLayout) mView.findViewById(R.id.tabla_cliente);
 
         cancelar.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -279,21 +282,26 @@ public class AlarmFragment extends Fragment {
                         "La solicitud de atención ha sido atendido exitosamente por la unidad: "+networks.getCarCode());
             }
         });
-        //Log.d("AlarmaFragment", "statusAtencion: "+alarma.get(0));
+        Log.d("AlarmaFragment", "statusAtencion: "+alarma.size());
 
         if (alarma.size() == 0) {
-            status.setText("Sin asignación de atención");
+            imageStatusA2.setVisibility(View.VISIBLE);
+            status2.setText("Sin asignación de atención");
+            /*status2.setText("Sin asignación de atención");
             status1.setVisibility(View.GONE);
             imageStatusA.setVisibility(View.GONE);
             imageStatusP.setVisibility(View.VISIBLE);
             imageStatusA1.setVisibility(View.GONE);
-            imageStatusP1.setVisibility(View.GONE);
-            cancelar.setVisibility(View.GONE);
-            atendido.setVisibility(View.GONE);
-            tabla_cliente.setVisibility(View.GONE);
-            datos_cliente.setVisibility(View.GONE);
-            row.setVisibility(View.GONE);
-            message.setVisibility(View.VISIBLE);
+            imageStatusP1.setVisibility(View.GONE);*/
+            //cancelar.setVisibility(View.GONE);
+            //atendido.setVisibility(View.GONE);
+            //row.setVisibility(View.GONE);
+
+            // message.setVisibility(View.VISIBLE);
+            textView7.setVisibility(View.GONE);
+            imageView3.setVisibility(View.GONE);
+            button_done.setVisibility(View.GONE);
+            linearLayout.setVisibility(View.GONE);
         }else{
             if (alarma.get(0).getStatus().equals("en atencion")){
                 status.setText("Alarma recibida de manera exitosa");
@@ -307,9 +315,10 @@ public class AlarmFragment extends Fragment {
                 cancelar.setVisibility(View.VISIBLE);
                 atendido.setVisibility(View.VISIBLE);
 
-                tabla_cliente.setVisibility(View.VISIBLE);
-                datos_cliente.setVisibility(View.VISIBLE);
-                datos_cliente.setText("Datos del cliente "+user.getFirstName());
+                textView7.setVisibility(View.VISIBLE);
+                imageView3.setVisibility(View.VISIBLE);
+                button_done.setVisibility(View.VISIBLE);
+                linearLayout.setVisibility(View.VISIBLE);
                 nombre.setText(user.getDisplayName());
                 telefono.setText(user.getPhone());
                 correo.setText(user.getEmail());
