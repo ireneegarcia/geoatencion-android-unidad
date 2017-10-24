@@ -34,11 +34,9 @@ import android.widget.TextView;
 
 import com.example.irene.geoatencionunidad.Model.Alarma;
 import com.example.irene.geoatencionunidad.Model.Alarmas;
-import com.example.irene.geoatencionunidad.Model.CategoriaServicios;
 import com.example.irene.geoatencionunidad.Model.Logs;
 import com.example.irene.geoatencionunidad.Model.Networks;
 import com.example.irene.geoatencionunidad.Model.NotificationFirebase;
-import com.example.irene.geoatencionunidad.Model.Solicitudes;
 import com.example.irene.geoatencionunidad.Remote.APIService;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -78,16 +76,23 @@ public class MapsFragment extends Fragment {
     ListView categorias;
     private static SetLocationPush slp = null;
 
-    List<CategoriaServicios> categoriaServicio;
-    List<Solicitudes> solicitudes;
-    ArrayList<Alarmas> alarma = new ArrayList<>();
-    Networks networks;
+    // alarma en proceso
+    public static ArrayList<Alarmas> alarma = new ArrayList<>();
+    // la unidad presente
+    public static Networks networks;
+    // si hay atencion en proceso
+    public Boolean isprocess = false;
+
     MapView mMapView;
     private static GoogleMap googleMap;
 
     //Coordenadas de ubicación
     public static Location mCurrentLocation;
     public static Location mCurrentLocationPush;
+
+    /*Para verificar que primer se carguen las
+        coordenadas inicial y luego se envien en el servicio*/
+    public static Boolean onMap = false;
 
     //dirección de la ubicación
     public static String address;
@@ -97,6 +102,8 @@ public class MapsFragment extends Fragment {
     private static String mLastUpdateTime;
     //fecha
     private static String mLastUpdateDate;
+
+
 
     public MapsFragment() {
         // Required empty public constructor
@@ -110,6 +117,8 @@ public class MapsFragment extends Fragment {
         mView = inflater.inflate(R.layout.fragment_maps, container, false);
         c = (Context)getActivity();
         cp = (Context)getActivity();
+        onMap = false;
+        isprocess = false;
 
         obtenerUnidad();
         mMapView = (MapView) mView.findViewById(R.id.mapView);
@@ -205,7 +214,7 @@ public class MapsFragment extends Fragment {
                     Address DirCalle = list.get(0);
                     /*mensaje2.setText("Mi direccion es: \n"
                             + DirCalle.getAddressLine(0));*/
-                    Log.d("my tag", "Mi direccion es: \n"
+                    Log.d("my tag", "setLocation Mi direccion es: \n"
                             + DirCalle.getAddressLine(0));
                     address = DirCalle.getAddressLine(0);
                     agregarMarcador(DirCalle.getAddressLine(0));
@@ -239,25 +248,33 @@ public class MapsFragment extends Fragment {
             // Este metodo se ejecuta cada vez que el GPS recibe nuevas coordenadas
             // debido a la deteccion de un cambio de ubicacion
 
+
             if (!notificacion.equals("")) {
                 AlertDialog alert = createSimpleDialog(notificacion);
                 alert.show();
                 notificacion = "";
             }
-            if (!notificacionUbicacion.equals("esperando") && !notificacionUbicacion.equals("en atencion")) {
-                googleMap.clear();
-                obtenerAlarmas();
-                loc.getLatitude();
-                loc.getLongitude();
-                mCurrentLocation = loc;
-                String Text = "Mi ubicacion actual es: " + "\n Lat = "
-                        + mCurrentLocation.getLatitude() + "\n Long = " + mCurrentLocation.getLongitude();
-                //  mensaje1.setText(Text);
-                Log.d("my tag", Text);
-                mLastUpdateTime = DateFormat.getTimeInstance().format(new Date());
-                mLastUpdateDate = DateFormat.getDateInstance().format(new Date());
-                setLocation();
-            }
+            /*if (!notificacionUbicacion.equals("esperando") && !notificacionUbicacion.equals("en atencion")) {
+
+
+                Log.d("my tag", "paso por aqui");
+            }*/
+
+            obtenerAlarmas();
+            onMap = true;
+            googleMap.clear();
+
+            loc.getLatitude();
+            loc.getLongitude();
+            mCurrentLocation = loc;
+            String Text = "onLocationChanged Mi ubicacion actual es: " + "\n Lat = "
+                    + mCurrentLocation.getLatitude() + "\n Long = " + mCurrentLocation.getLongitude();
+            //  mensaje1.setText(Text);
+            Log.d("my tag", Text);
+            mLastUpdateTime = DateFormat.getTimeInstance().format(new Date());
+            mLastUpdateDate = DateFormat.getDateInstance().format(new Date());
+            setLocation();
+
         }
 
         @Override
@@ -314,50 +331,6 @@ public class MapsFragment extends Fragment {
         mMapView.onLowMemory();
     }
 
-    /*public void listarCategorias(){
-
-        // Log.d("myTag", "API Solicitudes");
-        APIService.Factory.getIntance().listSolicituds().enqueue(new Callback<List<Solicitudes>>() {
-            @Override
-            public void onResponse(Call<List<Solicitudes>> call, Response<List<Solicitudes>> response) {
-                //Log.d("myTag", "--->bien " + call.request().url());
-
-                if(response.isSuccessful()) {
-                    solicitudes = response.body();
-                    // Log.d("myTag", "--->on reponse " + response.body().toString());
-                    //Log.d("myTag", "--->on reponse " + call.request().url());
-
-                }
-            }
-
-            @Override
-            public void onFailure(Call<List<Solicitudes>> call, Throwable t) {
-                // Log.d("myTag", "This is my message on failure " + call.request().url());
-                //Log.d("myTag", "This is my message on failure " + t.toString());
-            }
-        });
-
-        //  Log.d("myTag", "API Categorías");
-        APIService.Factory.getIntance().listCategories().enqueue(new Callback<List<CategoriaServicios>>() {
-            @Override
-            public void onResponse(Call<List<CategoriaServicios>> call, Response<List<CategoriaServicios>> response) {
-                // Log.d("myTag", "--->bien " + call.request().url());
-
-                if(response.isSuccessful()) {
-                    categoriaServicio = response.body();
-                    //Log.d("myTag", "--->on reponse " + response.body().toString());
-                    //Log.d("myTag", "--->on reponse " + call.request().url());
-
-                }
-            }
-
-            @Override
-            public void onFailure(Call<List<CategoriaServicios>> call, Throwable t) {
-                // Log.d("myTag", "This is my message on failure " + call.request().url());
-                // Log.d("myTag", "This is my message on failure " + t.toString());
-            }
-        });
-    }*/
 
     public void obtenerUnidad(){
 
@@ -406,8 +379,11 @@ public class MapsFragment extends Fragment {
 
                     for (int i = 0; i< response.body().size(); i++){
                         // si la alarma pertenece al usuario
-                        if(response.body().get(i).getNetwork().equals(networks.get_id())){
+                        if(response.body().get(i).getNetwork().equals(networks.get_id()) &&
+                                response.body().get(i).getStatus().equals("en atencion")){
                             alarma.add(response.body().get(i));
+
+                            isprocess = true;
 
                             MarkerOptions options = new MarkerOptions();
                             IconGenerator iconFactory = new IconGenerator(cp);
@@ -426,6 +402,21 @@ public class MapsFragment extends Fragment {
                             googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng,
                                     17));
                             Log.d("my tag", "Zoom hecho.............................");
+                        }
+                        if ((response.body().get(i).getStatus().equals("cancelado por el cliente") ||
+                                response.body().get(i).getStatus().equals("cancelado por el operador"))
+                                && isprocess == true) {
+
+                            isprocess = false;
+                            NotificationFirebase notification;
+                            notification = new NotificationFirebase(
+                                    response.body().get(i).getLatitude(),
+                                    response.body().get(i).getLongitude(),
+                                    response.body().get(i).getAddress(),
+                                    response.body().get(i).getUser().getDisplayName(),
+                                    response.body().get(i).getStatus());
+
+                            AgregarMarcadorPush(notification);
                         }
                     }
 
@@ -661,14 +652,6 @@ public class MapsFragment extends Fragment {
                 17));
         Log.d("my tag", "Zoom hecho.............................");
 
-        /*googleMap.addMarker(new MarkerOptions().position(currentLatLng)
-                .title("Mi posición actual")
-                .snippet(address)
-                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));*/
-
-        // For zooming automatically to the location of the marker
-        //CameraPosition cameraPosition = new CameraPosition.Builder().target(currentLatLng).zoom(12).build();
-        // googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
     }
 
     public static class SetLocationPush extends AsyncTask<Void, Void, Boolean> {

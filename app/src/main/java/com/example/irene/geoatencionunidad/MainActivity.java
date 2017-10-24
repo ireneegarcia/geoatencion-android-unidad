@@ -17,6 +17,9 @@ import android.view.MenuItem;
 import android.view.View;
 
 import com.example.irene.geoatencionunidad.Model.NotificationFirebase;
+import com.example.irene.geoatencionunidad.Services.Servicio;
+
+import static com.example.irene.geoatencionunidad.Services.Servicio.done;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -29,6 +32,7 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        // notificación push con firebase
         if (getIntent().getExtras() != null) {
             Log.d("firebase", "DATOS RECIBIDOS MAIN ACTIVITY");
             Log.d("firebase", "Latitud del cliente: " + getIntent().getExtras().getString("clientLatitude"));
@@ -53,14 +57,6 @@ public class MainActivity extends AppCompatActivity
         }
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        /*FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });*/
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -70,11 +66,10 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-        /*Fragment fragment = new MapsFragment();
-        getSupportFragmentManager().beginTransaction()
-                .replace(R.id.fragment, fragment)
-                .commit();*/
 
+        // inicio del servicio
+        done = false;
+        startService(new Intent(this, Servicio.class));
 
     }
 
@@ -104,6 +99,9 @@ public class MainActivity extends AppCompatActivity
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            Log.d("main-service", "Se de tiene el servicio: ");
+            stopService(new Intent(this, Servicio.class));
+            done = true;
             Intent intent = new Intent (this, LoginActivity.class);
             startActivityForResult(intent, 0);
             finish();

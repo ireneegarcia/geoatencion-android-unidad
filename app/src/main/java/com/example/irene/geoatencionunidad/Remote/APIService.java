@@ -44,15 +44,11 @@ public interface APIService {
     Call<FirebaseToken> registerToken(@Field("token") String token,
                                       @Field("userId") String user);
 
-    @GET("api/networks")
-    Call<List<Networks>> listNetworks();
-
-    @GET("/api/users/{userId}")
-    Call<Users> getClient(@Path("userId") String userId);
-
-    @PUT("api/networks/{networkId}")
-    Call<Networks> updateNetwork(@Path("networkId") String networkId,
-                                 @Body Networks network);
+    @POST("/api/networks/{networkId}/new-position")
+    @FormUrlEncoded
+    Call<Networks> updateNetworkLocation(@Path("networkId") String networkId,
+                                       @Field("lat") String lat,
+                                       @Field("lng") String lng);
 
     @POST("/api/logs")
     @FormUrlEncoded
@@ -61,6 +57,20 @@ public interface APIService {
                          @Field("network") String network,
                          @Field("client") String client,
                          @Field("organism") String organism);
+
+    @GET("api/networks")
+    Call<List<Networks>> listNetworks();
+
+    @GET("/api/users/{userId}")
+    Call<Users> getClient(@Path("userId") String userId);
+
+    @GET("api/alarms")
+    Call<List<Alarmas>> listAlarms();
+
+    @PUT("api/networks/{networkId}")
+    Call<Networks> updateNetwork(@Path("networkId") String networkId,
+                                 @Body Networks network);
+
 
 
 
@@ -90,8 +100,7 @@ public interface APIService {
     @GET("api/solicituds")
     Call<List<Solicitudes>> listSolicituds();
 
-    @GET("api/alarms")
-    Call<List<Alarmas>> listAlarms();
+
 
     @PUT("/api/alarms/{alarmId}")
     Call<Alarma> updateAlarm(@Path("alarmId") String alarmId,

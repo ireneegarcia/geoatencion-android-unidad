@@ -69,7 +69,9 @@ public class NotificationFirebase {
         this.status = status;
     }
 
-    public NotificationFirebase(String clientLatitude, String clientLongitude, String clientAddress, String clientName, String status) {
+    public NotificationFirebase(String clientLatitude, String clientLongitude,
+                                String clientAddress, String clientName,
+                                String status) {
         this.clientLatitude = clientLatitude;
         this.clientLongitude = clientLongitude;
         this.clientAddress = clientAddress;

@@ -72,6 +72,9 @@
                 <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
         </service>
+        <service android:name=".Services.Servicio"
+            android:launchMode="singleInstance">
+        </service>
     </application>
 
 </manifest>
