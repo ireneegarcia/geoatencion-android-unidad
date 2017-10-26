@@ -271,7 +271,7 @@ public class AlarmFragment extends Fragment {
             public void onClick(View v) {
                 actualizarAlarma("cancelado por el cliente",
                         "/modules/panels/client/img/cancelbyclient.png",
-                        "La solicitud de atención ha sido cancelada por el cliente");
+                        "La solicitud de atención ha sido cancelada por el cliente por la unidad: "+networks.getCarCode());
             }
         });
 

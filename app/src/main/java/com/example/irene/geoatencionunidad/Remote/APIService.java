@@ -48,7 +48,8 @@ public interface APIService {
     @FormUrlEncoded
     Call<Networks> updateNetworkLocation(@Path("networkId") String networkId,
                                        @Field("lat") String lat,
-                                       @Field("lng") String lng);
+                                       @Field("lng") String lng,
+                                       @Field("address") String address);
 
     @POST("/api/logs")
     @FormUrlEncoded

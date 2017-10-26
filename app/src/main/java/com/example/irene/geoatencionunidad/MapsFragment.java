@@ -223,25 +223,57 @@ public class MapsFragment extends Fragment {
                     editor.putString("latitude", String.valueOf(mCurrentLocation.getLatitude()));
                     editor.putString("longitude", String.valueOf(mCurrentLocation.getLongitude()));
                     editor.putString("address", String.valueOf(DirCalle.getAddressLine(0)));
-                    editor.commit();
-                }
+                    editor.commit();                }
 
+                    // bandera para el servicio
+                    onMap = true;
+
+                sendLocation();
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
     }
-    /* Aqui empieza la Clase Localizacion */
-    public class Localizacion implements LocationListener {
-       /* MainActivity mainActivity;
+    public void sendLocation(){
 
-        public MainActivity getMainActivity() {
-            return mainActivity;
+
+        if (onMap == true) {
+            Log.d("sendLocation", ""+networks.get_id());
+            Log.d("sendLocation", ""+mCurrentLocation.getLatitude());
+            Log.d("sendLocation", ""+mCurrentLocation.getLongitude());
+
+            APIService.Factory.getIntance()
+                    .updateNetworkLocation(networks.get_id(),
+                            mCurrentLocation.getLatitude()+"",
+                            mCurrentLocation.getLongitude()+"",
+                            address)
+                    .enqueue(new Callback<Networks>() {
+
+                        @Override
+                        public void onResponse(Call<Networks> call, Response<Networks> response) {
+
+                            //code == 200
+                            if(response.isSuccessful()) {
+                                Log.d("sendLocation", "onResponse: todo fino");
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(Call<Networks> call, Throwable t){
+                            //
+                            Log.d("sendLocation", "This is my message on failure " + call.request().url());
+                            Log.d("sendLocation", "This is my message on failure " + t.toString());
+                        }
+                    });
+
         }
 
-        public void setMainActivity(Context mainActivity) {
-            this. mainActivity = mainActivity;
-        }*/
+
+    }
+
+    /* Aqui empieza la Clase Localizacion */
+    public class Localizacion implements LocationListener {
+
 
         @Override
         public void onLocationChanged(Location loc) {
@@ -255,15 +287,11 @@ public class MapsFragment extends Fragment {
                 notificacion = "";
             }
             /*if (!notificacionUbicacion.equals("esperando") && !notificacionUbicacion.equals("en atencion")) {
-
-
                 Log.d("my tag", "paso por aqui");
             }*/
 
             obtenerAlarmas();
-            onMap = true;
             googleMap.clear();
-
             loc.getLatitude();
             loc.getLongitude();
             mCurrentLocation = loc;
@@ -271,6 +299,7 @@ public class MapsFragment extends Fragment {
                     + mCurrentLocation.getLatitude() + "\n Long = " + mCurrentLocation.getLongitude();
             //  mensaje1.setText(Text);
             Log.d("my tag", Text);
+
             mLastUpdateTime = DateFormat.getTimeInstance().format(new Date());
             mLastUpdateDate = DateFormat.getDateInstance().format(new Date());
             setLocation();
@@ -306,6 +335,8 @@ public class MapsFragment extends Fragment {
             }
         }
     }
+
+
 
     @Override
     public void onResume() {
@@ -441,7 +472,7 @@ public class MapsFragment extends Fragment {
         Alarma enviarAlarma = new Alarma(alarma.get(0).get_id(),
                 alarma.get(0).getUser().getId(),
                 alarma.get(0).getCategoryService(),
-                "cancelado por la unidad",
+                "esperando",
                 alarma.get(0).getLatitude(),
                 alarma.get(0).getLongitude(),
                 alarma.get(0).getAddress(),
@@ -493,7 +524,7 @@ public class MapsFragment extends Fragment {
 
         // Creación de log
         APIService.Factory.getIntance().createLog(
-                "La solicitud de atención ha sido cancelada por la unidad",
+                "La solicitud de atención ha sido cancelada por la unidad: " + networks.getCarCode(),
                 alarma.get(0).get_id(),
                 "",
                 alarma.get(0).getUser().getId(),
