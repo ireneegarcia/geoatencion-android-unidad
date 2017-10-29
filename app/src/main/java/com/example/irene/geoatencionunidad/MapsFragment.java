@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
@@ -37,7 +38,10 @@ import com.example.irene.geoatencionunidad.Model.Alarmas;
 import com.example.irene.geoatencionunidad.Model.Logs;
 import com.example.irene.geoatencionunidad.Model.Networks;
 import com.example.irene.geoatencionunidad.Model.NotificationFirebase;
+import com.example.irene.geoatencionunidad.Model.RouteGet;
+import com.example.irene.geoatencionunidad.Model.RouteSet;
 import com.example.irene.geoatencionunidad.Remote.APIService;
+import com.example.irene.geoatencionunidad.Remote.APIServiceRoute;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
@@ -47,6 +51,8 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Polyline;
+import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.maps.android.ui.IconGenerator;
 
 import java.io.IOException;
@@ -102,6 +108,10 @@ public class MapsFragment extends Fragment {
     private static String mLastUpdateTime;
     //fecha
     private static String mLastUpdateDate;
+
+    // Objetos para traer el json de la api de google map y fragmentar el polyline
+    RouteSet routeSet = new RouteSet();
+    RouteGet routeGet = new RouteGet();
 
 
 
@@ -225,8 +235,8 @@ public class MapsFragment extends Fragment {
                     editor.putString("address", String.valueOf(DirCalle.getAddressLine(0)));
                     editor.commit();                }
 
-                    // bandera para el servicio
-                    onMap = true;
+                // bandera para el servicio
+                onMap = true;
 
                 sendLocation();
             } catch (IOException e) {
@@ -430,9 +440,13 @@ public class MapsFragment extends Fragment {
                             mapMarker.setTitle(response.body().get(i).getUser().getDisplayName());
                             Log.d("my tag", "Marcador añadido.............................");
                             // For zooming automatically to the location of the marker
-                            googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng,
-                                    17));
+                            /*googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng,
+                                    14));*/
                             Log.d("my tag", "Zoom hecho.............................");
+                            makeURL(Double.parseDouble(response.body().get(i).getLatitude()),
+                                    Double.parseDouble(response.body().get(i).getLongitude()),
+                                    Double.parseDouble(networks.getLatitude()),
+                                    Double.parseDouble(networks.getLongitude()));
                         }
                         if ((response.body().get(i).getStatus().equals("cancelado por el cliente") ||
                                 response.body().get(i).getStatus().equals("cancelado por el operador"))
@@ -467,6 +481,49 @@ public class MapsFragment extends Fragment {
 
     }
 
+    public void makeURL(final double destlat, final double destlog,
+                        final double sourcelat, final double sourcelog) {
+
+        routeSet.setAlternatives("true");
+        routeSet.setDestination(destlat + "," + destlog);
+        routeSet.setMode("driving");
+        routeSet.setOrigin(sourcelat + "," + sourcelog);
+        routeSet.setSensor("false");
+        APIServiceRoute.FactoryRoute.getIntance().getRoute(routeSet.getOrigin(),routeSet.getDestination(),routeSet.getSensor(),routeSet.getMode(),routeSet.getAlternatives()).enqueue(new Callback<RouteGet>() {
+            @Override
+            public void onResponse(Call<RouteGet> call, Response<RouteGet> response) {
+
+                //code == 200
+                if(response.isSuccessful()) {
+                    routeGet = response.body();
+
+                    for (int i = 0; i< routeGet.getRoutes().get(0).getLegs().get(0).getSteps().size(); i++){
+                        Log.d("routes", "onResponse: "+i);
+                        /*Log.d("jsonroute", "Lat" + routeGet.getRoutes().get(0).getLegs().get(0).getSteps().get(i).getStartLocation().getLat().toString());
+                        Log.d("jsonroute", "Long" + routeGet.getRoutes().get(0).getLegs().get(0).getSteps().get(i).getStartLocation().getLng().toString());*/
+
+                        Polyline line = googleMap.addPolyline(new PolylineOptions()
+                                .add(new LatLng(Double.parseDouble(routeGet.getRoutes().get(0).getLegs().get(0).getSteps().get(i).getStartLocation().getLat()),
+                                                Double.parseDouble(routeGet.getRoutes().get(0).getLegs().get(0).getSteps().get(i).getStartLocation().getLng())),
+                                     new LatLng(Double.parseDouble(routeGet.getRoutes().get(0).getLegs().get(0).getSteps().get(i).getEndLocation().getLat()),
+                                                Double.parseDouble(routeGet.getRoutes().get(0).getLegs().get(0).getSteps().get(i).getEndLocation().getLng())))
+                                .width(5)
+                                .color(Color.RED)
+                                .geodesic(true));
+
+                        // routeGet.getRoutes().get(0).getLegs().get(7).getSteps().toString();
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<RouteGet> call, Throwable t){
+                //
+                Log.d("myTag", "This is my message on failure " + call.request().url());
+            }
+        });
+    }
+
     public void actualizarAlarma(){
 
         Alarma enviarAlarma = new Alarma(alarma.get(0).get_id(),
@@ -481,7 +538,6 @@ public class MapsFragment extends Fragment {
                 alarma.get(0).getOrganism(),
                 "/modules/panels/client/img/cancelbynetwork.png",
                 "");
-
         // Actualización de alarma
 
         APIService.Factory.getIntance().updateAlarm(enviarAlarma.get_id(), enviarAlarma).enqueue(new Callback<Alarma>() {
@@ -680,7 +736,7 @@ public class MapsFragment extends Fragment {
         Log.d("my tag", "Marcador añadido.............................");
         // For zooming automatically to the location of the marker
         googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng,
-                17));
+                14));
         Log.d("my tag", "Zoom hecho.............................");
 
     }
@@ -720,7 +776,7 @@ public class MapsFragment extends Fragment {
                 Log.d("my tag", "Marcador añadido.............................");
                 // For zooming automatically to the location of the marker
                 googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng,
-                        17));
+                        14));
                 Log.d("my tag", "Zoom hecho.............................");
             }
             notificacion = (noti.getStatus());
