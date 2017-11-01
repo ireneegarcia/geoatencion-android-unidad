@@ -294,7 +294,9 @@ public class MapsFragment extends Fragment {
             if (!notificacion.equals("")) {
                 AlertDialog alert = createSimpleDialog(notificacion);
                 alert.show();
+                Log.d("notificacion", "paso por aqui, notificacion: "+notificacion);
                 notificacion = "";
+
             }
             /*if (!notificacionUbicacion.equals("esperando") && !notificacionUbicacion.equals("en atencion")) {
                 Log.d("my tag", "paso por aqui");
@@ -443,12 +445,17 @@ public class MapsFragment extends Fragment {
                             /*googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng,
                                     14));*/
                             Log.d("my tag", "Zoom hecho.............................");
+                            Log.d("makeurl", " "+ response.body().get(i).getLatitude());
+                            Log.d("makeurl", " "+ response.body().get(i).getLongitude());
+                            Log.d("makeurl", " "+ networks.getLatitude());
+                            Log.d("makeurl", " "+ networks.getLongitude());
+                            Log.d("makeurl", " ");
                             makeURL(Double.parseDouble(response.body().get(i).getLatitude()),
                                     Double.parseDouble(response.body().get(i).getLongitude()),
                                     Double.parseDouble(networks.getLatitude()),
                                     Double.parseDouble(networks.getLongitude()));
                         }
-                        if ((response.body().get(i).getStatus().equals("cancelado por el cliente") ||
+                        /*if ((response.body().get(i).getStatus().equals("cancelado por el cliente") ||
                                 response.body().get(i).getStatus().equals("cancelado por el operador"))
                                 && isprocess == true) {
 
@@ -462,7 +469,7 @@ public class MapsFragment extends Fragment {
                                     response.body().get(i).getStatus());
 
                             AgregarMarcadorPush(notification);
-                        }
+                        }*/
                     }
 
                     //filtrado(response.body());
@@ -494,9 +501,11 @@ public class MapsFragment extends Fragment {
             public void onResponse(Call<RouteGet> call, Response<RouteGet> response) {
 
                 //code == 200
-                if(response.isSuccessful()) {
+                if(response.isSuccessful() && response.body().getRoutes().size() != 0) {
                     routeGet = response.body();
 
+                    Log.d("routeGet", " "+routeGet.getRoutes().toString());
+                    Log.d("routeGet", " ");
                     for (int i = 0; i< routeGet.getRoutes().get(0).getLegs().get(0).getSteps().size(); i++){
                         Log.d("routes", "onResponse: "+i);
                         /*Log.d("jsonroute", "Lat" + routeGet.getRoutes().get(0).getLegs().get(0).getSteps().get(i).getStartLocation().getLat().toString());
@@ -526,10 +535,14 @@ public class MapsFragment extends Fragment {
 
     public void actualizarAlarma(){
 
+        //nombre del usuario logueado
+        SharedPreferences settings = c.getSharedPreferences("perfil", c.MODE_PRIVATE);
+        final String name = settings.getString("name", null);
+
         Alarma enviarAlarma = new Alarma(alarma.get(0).get_id(),
                 alarma.get(0).getUser().getId(),
                 alarma.get(0).getCategoryService(),
-                "esperando",
+                "cancelado por la unidad",
                 alarma.get(0).getLatitude(),
                 alarma.get(0).getLongitude(),
                 alarma.get(0).getAddress(),
@@ -580,7 +593,7 @@ public class MapsFragment extends Fragment {
 
         // Creación de log
         APIService.Factory.getIntance().createLog(
-                "La solicitud de atención ha sido cancelada por la unidad: " + networks.getCarCode(),
+                "La solicitud de atención ha sido cancelada por la unidad: " + networks.getCarCode()+", cuyo responsable es: "+name,
                 alarma.get(0).get_id(),
                 "",
                 alarma.get(0).getUser().getId(),
@@ -780,7 +793,7 @@ public class MapsFragment extends Fragment {
                 Log.d("my tag", "Zoom hecho.............................");
             }
             notificacion = (noti.getStatus());
-            //notificacionId = (noti.getI);
+            //notificacionId| = (noti.getI);
             notificacionUbicacion = (noti.getStatus());
             //createSimpleDialog(notificacion);
         }

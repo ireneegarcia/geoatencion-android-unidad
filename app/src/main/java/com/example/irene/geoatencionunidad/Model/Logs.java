@@ -91,4 +91,16 @@ public class Logs {
                 ", organism='" + organism + '\'' +
                 '}';
     }
+
+    public Logs(String description,
+                String alarm,
+                String network,
+                String client,
+                String organism) {
+        this.description = description;
+        this.alarm = alarm;
+        this.network = network;
+        this.client = client;
+        this.organism = organism;
+    }
 }

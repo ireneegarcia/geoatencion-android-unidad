@@ -164,6 +164,13 @@ public class AlarmFragment extends Fragment {
         });
     }
     public void actualizarAlarma(String status, String icon, String textLog){
+        String networkID;
+
+        if (status.equals("cancelado por la unidad")) {
+            networkID = "";
+        }else{
+            networkID = alarma.get(0).getNetwork();
+        }
 
         Alarma enviarAlarma = new Alarma(alarma.get(0).get_id(),
                 alarma.get(0).getUser().getId(),
@@ -176,7 +183,14 @@ public class AlarmFragment extends Fragment {
                 alarma.get(0).getRating(),
                 alarma.get(0).getOrganism(),
                 icon,
-                alarma.get(0).getNetwork());
+                networkID);
+
+        Logs log = new Logs(textLog,
+                alarma.get(0).get_id(),
+                networkID,
+                alarma.get(0).getUser().getId(),
+                alarma.get(0).getOrganism());
+
 
         // Actualización de alarma
 
@@ -218,13 +232,15 @@ public class AlarmFragment extends Fragment {
             }
         });
 
+
+
         // Creación de log
         APIService.Factory.getIntance().createLog(
-                textLog,
-                alarma.get(0).get_id(),
-                "",
-                alarma.get(0).getUser().getId(),
-                alarma.get(0).getOrganism()).enqueue(new Callback<Logs>() {
+                log.getDescription(),
+                log.getAlarm(),
+                log.getNetwork(),
+                log.getClient(),
+                log.getOrganism()).enqueue(new Callback<Logs>() {
             @Override
             public void onResponse(Call<Logs> call, Response<Logs> response) {
 
@@ -266,12 +282,16 @@ public class AlarmFragment extends Fragment {
         final TextView telefono = (TextView) mView.findViewById(R.id.telefono);
         final TextView correo = (TextView) mView.findViewById(R.id.email);
 
+        //nombre del usuario logueado
+        SharedPreferences settings = c.getSharedPreferences("perfil", c.MODE_PRIVATE);
+        final String name = settings.getString("name", null);
+
         cancelar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                actualizarAlarma("cancelado por el cliente",
-                        "/modules/panels/client/img/cancelbyclient.png",
-                        "La solicitud de atención ha sido cancelada por el cliente por la unidad: "+networks.getCarCode());
+                actualizarAlarma("cancelado por la unidad",
+                        "/modules/panels/client/img/cancelbynetwork.png",
+                        "La solicitud de atención ha sido cancelada por la unidad: "+networks.getCarCode()+", cuyo responsable es: "+name);
             }
         });
 
@@ -280,7 +300,7 @@ public class AlarmFragment extends Fragment {
             public void onClick(View v) {
                 actualizarAlarma("atendido",
                         "/modules/panels/client/img/done.png",
-                        "La solicitud de atención ha sido atendido exitosamente por la unidad: "+networks.getCarCode());
+                        "La solicitud de atención ha sido atendido exitosamente por la unidad: "+networks.getCarCode()+", cuyo responsable es: "+name);
             }
         });
         Log.d("AlarmaFragment", "statusAtencion: "+alarma.size());
