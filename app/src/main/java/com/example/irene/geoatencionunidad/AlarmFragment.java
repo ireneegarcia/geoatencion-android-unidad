@@ -291,7 +291,10 @@ public class AlarmFragment extends Fragment {
             public void onClick(View v) {
                 actualizarAlarma("cancelado por la unidad",
                         "/modules/panels/client/img/cancelbynetwork.png",
-                        "La solicitud de atención ha sido cancelada por la unidad: "+networks.getCarCode()+", cuyo responsable es: "+name);
+                        "Ha sido cancelada la solicitud de atención: " + alarma.get(0).get_id() +
+                                " del cliente: " + alarma.get(0).getUser().getDisplayName() +
+                                ", por la unidad: "+networks.getCarCode()+
+                                ", cuyo responsable es: "+name);
             }
         });
 
@@ -300,7 +303,10 @@ public class AlarmFragment extends Fragment {
             public void onClick(View v) {
                 actualizarAlarma("atendido",
                         "/modules/panels/client/img/done.png",
-                        "La solicitud de atención ha sido atendido exitosamente por la unidad: "+networks.getCarCode()+", cuyo responsable es: "+name);
+                        "Ha sido atendido exitosamente la solicitud de atención:" + alarma.get(0).get_id() +
+                                " del cliente: " + user.getDisplayName()+
+                                ", por la unidad: "+networks.getCarCode()+
+                                ", cuyo responsable es: "+name);
             }
         });
         Log.d("AlarmaFragment", "statusAtencion: "+alarma.size());

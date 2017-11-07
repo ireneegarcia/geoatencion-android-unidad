@@ -117,6 +117,10 @@ public class NetworkFragment extends Fragment {
 
     public void cambiarStatus(){
 
+        //id del usuario logueado
+        SharedPreferences settings = c.getSharedPreferences("perfil", c.MODE_PRIVATE);
+        final String name = settings.getString("name", null);
+
         networks.setStatus(status);
 
         APIService.Factory.getIntance().updateNetwork(networks.get_id(), networks).enqueue(new Callback<Networks>() {
@@ -139,7 +143,8 @@ public class NetworkFragment extends Fragment {
         });
 
         // Creación de log
-        APIService.Factory.getIntance().createLog("La unidad ha cambiado su status a: "+ status,
+        APIService.Factory.getIntance().createLog("La unidad ha cambiado su status a: "+
+                        status + ", responble de la unidad: " + name,
                 "",
                 networks.get_id(),
                 "",
