@@ -36,6 +36,8 @@ import android.widget.TextView;
 import com.example.irene.geoatencionunidad.Model.Alarma;
 import com.example.irene.geoatencionunidad.Model.Alarmas;
 import com.example.irene.geoatencionunidad.Model.Logs;
+import com.example.irene.geoatencionunidad.Model.MobileUnitHistory;
+import com.example.irene.geoatencionunidad.Model.MobileUnitLog;
 import com.example.irene.geoatencionunidad.Model.Networks;
 import com.example.irene.geoatencionunidad.Model.NotificationFirebase;
 import com.example.irene.geoatencionunidad.Model.RouteGet;
@@ -248,9 +250,9 @@ public class MapsFragment extends Fragment {
 
 
         if (onMap == true) {
-            Log.d("sendLocation", ""+networks.get_id());
+            /*Log.d("sendLocation", ""+networks.get_id());
             Log.d("sendLocation", ""+mCurrentLocation.getLatitude());
-            Log.d("sendLocation", ""+mCurrentLocation.getLongitude());
+            Log.d("sendLocation", ""+mCurrentLocation.getLongitude());*/
 
             APIService.Factory.getIntance()
                     .updateNetworkLocation(networks.get_id(),
@@ -270,6 +272,30 @@ public class MapsFragment extends Fragment {
 
                         @Override
                         public void onFailure(Call<Networks> call, Throwable t){
+                            //
+                            Log.d("sendLocation", "This is my message on failure " + call.request().url());
+                            Log.d("sendLocation", "This is my message on failure " + t.toString());
+                        }
+                    });
+
+            APIService.Factory.getIntance()
+                    .updateHistoryLocation(networks.get_id(),
+                            mCurrentLocation.getLatitude()+"",
+                            mCurrentLocation.getLongitude()+"",
+                            address)
+                    .enqueue(new Callback<MobileUnitHistory>() {
+
+                        @Override
+                        public void onResponse(Call<MobileUnitHistory> call, Response<MobileUnitHistory> response) {
+
+                            //code == 200
+                            if(response.isSuccessful()) {
+                                Log.d("sendLocation", "onResponse: todo fino");
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(Call<MobileUnitHistory> call, Throwable t){
                             //
                             Log.d("sendLocation", "This is my message on failure " + call.request().url());
                             Log.d("sendLocation", "This is my message on failure " + t.toString());
@@ -387,10 +413,11 @@ public class MapsFragment extends Fragment {
 
                 //code == 200
                 if(response.isSuccessful()) {
-                    Log.d("my tag", "onResponse: todo fino");
+
                     for (int i = 0; i< response.body().size(); i++){
                         // si la unidad pertenece al usuario
-                        if(response.body().get(i).getServiceUser().equals(mId)){
+                        Log.d("obtenerunidad", ""+response.body().get(i).getServiceUser());
+                        if(response.body().get(i).getServiceUser() != null && response.body().get(i).getServiceUser().equals(mId)){
                             networks = response.body().get(i);
 
                         }
@@ -591,7 +618,7 @@ public class MapsFragment extends Fragment {
             }
         });
 
-        // Creación de log
+        // Creación de log de la alarma
         APIService.Factory.getIntance().createLog(
                 "Ha sido cancelada la solicitud de atención" + alarma.get(0).get_id() +
                         " del cliente: " + alarma.get(0).getUser().getDisplayName() +
@@ -612,6 +639,31 @@ public class MapsFragment extends Fragment {
 
             @Override
             public void onFailure(Call<Logs> call, Throwable t){
+                //
+                Log.d("myTag", "This is my message on failure " + call.request().url());
+            }
+        });
+
+        // Creación de log de la unidad
+        APIService.Factory.getIntance().createMobileUnitLog(
+                networks.get_id(),
+                networks.getCarCode(),
+                "Ha sido cancelada la solicitud de atención" + alarma.get(0).get_id() +
+                        " del cliente: " + alarma.get(0).getUser().getDisplayName() +
+                        ", por la unidad: " + networks.getCarCode()+
+                        ", cuyo responsable es: "+name)
+                .enqueue(new Callback<MobileUnitLog>() {
+            @Override
+            public void onResponse(Call<MobileUnitLog> call, Response<MobileUnitLog> response) {
+
+                //code == 200
+                if(response.isSuccessful()) {
+                    Log.d("my tag", "onResponse: todo fino DEL LOG");
+                }
+            }
+
+            @Override
+            public void onFailure(Call<MobileUnitLog> call, Throwable t){
                 //
                 Log.d("myTag", "This is my message on failure " + call.request().url());
             }

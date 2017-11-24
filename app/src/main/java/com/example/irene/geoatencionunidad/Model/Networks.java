@@ -61,6 +61,10 @@ public class Networks {
     @Expose
     private String address;
 
+    @SerializedName("organism")
+    @Expose
+    private String organism;
+
     public String getLatitude() {
         return latitude;
     }
@@ -165,10 +169,20 @@ public class Networks {
         this._id = _id;
     }
 
+
+    public String getOrganism() {
+        return organism;
+    }
+
+    public void setOrganism(String organism) {
+        this.organism = organism;
+    }
+
     @Override
     public String toString() {
         return "Networks{" +
                 "carCode='" + carCode + '\'' +
+                ", _id='" + _id + '\'' +
                 ", carBrand='" + carBrand + '\'' +
                 ", carModel='" + carModel + '\'' +
                 ", carPlate='" + carPlate + '\'' +
@@ -177,6 +191,10 @@ public class Networks {
                 ", status='" + status + '\'' +
                 ", user=" + user +
                 ", serviceUser='" + serviceUser + '\'' +
+                ", latitude='" + latitude + '\'' +
+                ", longitude='" + longitude + '\'' +
+                ", address='" + address + '\'' +
+                ", organism='" + organism + '\'' +
                 '}';
     }
 }

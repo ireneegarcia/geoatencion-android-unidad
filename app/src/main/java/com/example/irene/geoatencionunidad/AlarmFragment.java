@@ -20,6 +20,7 @@ import android.widget.TextView;
 import com.example.irene.geoatencionunidad.Model.Alarma;
 import com.example.irene.geoatencionunidad.Model.Alarmas;
 import com.example.irene.geoatencionunidad.Model.Logs;
+import com.example.irene.geoatencionunidad.Model.MobileUnitLog;
 import com.example.irene.geoatencionunidad.Model.Networks;
 import com.example.irene.geoatencionunidad.Model.Users;
 import com.example.irene.geoatencionunidad.Remote.APIService;
@@ -76,7 +77,7 @@ public class AlarmFragment extends Fragment {
                     Log.d("my tag", "onResponse: todo fino");
                     for (int i = 0; i< response.body().size(); i++){
                         // si la unidad pertenece al usuario
-                        if(response.body().get(i).getServiceUser().equals(mId)){
+                        if(response.body().get(i).getServiceUser() != null && response.body().get(i).getServiceUser().equals(mId)){
                             networks = response.body().get(i);
                         }
                     }
@@ -252,6 +253,27 @@ public class AlarmFragment extends Fragment {
 
             @Override
             public void onFailure(Call<Logs> call, Throwable t){
+                //
+                Log.d("myTag", "This is my message on failure " + call.request().url());
+            }
+        });
+
+        // Creación de log
+        APIService.Factory.getIntance().createMobileUnitLog(
+                log.getNetwork(),
+                networks.getCarCode(),
+                log.getDescription()).enqueue(new Callback<MobileUnitLog>() {
+            @Override
+            public void onResponse(Call<MobileUnitLog> call, Response<MobileUnitLog> response) {
+
+                //code == 200
+                if(response.isSuccessful()) {
+                    Log.d("my tag", "onResponse: todo fino DEL LOG");
+                }
+            }
+
+            @Override
+            public void onFailure(Call<MobileUnitLog> call, Throwable t){
                 //
                 Log.d("myTag", "This is my message on failure " + call.request().url());
             }

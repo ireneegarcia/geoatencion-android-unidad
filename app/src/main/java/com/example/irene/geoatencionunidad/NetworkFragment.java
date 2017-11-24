@@ -12,7 +12,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.example.irene.geoatencionunidad.Model.Logs;
+import com.example.irene.geoatencionunidad.Model.MobileUnitLog;
 import com.example.irene.geoatencionunidad.Model.Networks;
 import com.example.irene.geoatencionunidad.Remote.APIService;
 
@@ -65,7 +65,7 @@ public class NetworkFragment extends Fragment {
                     Log.d("my tag", "onResponse: todo fino");
                     for (int i = 0; i< response.body().size(); i++){
                         // si la unidad pertenece al usuario
-                        if(response.body().get(i).getServiceUser().equals(mId)){
+                        if(response.body().get(i).getServiceUser() != null && response.body().get(i).getServiceUser().equals(mId)){
                             networks = response.body().get(i);
                         }
                     }
@@ -143,14 +143,12 @@ public class NetworkFragment extends Fragment {
         });
 
         // Creación de log
-        APIService.Factory.getIntance().createLog("La unidad ha cambiado su status a: "+
-                        status + ", responble de la unidad: " + name,
-                "",
-                networks.get_id(),
-                "",
-                networks.getUser().getId()).enqueue(new Callback<Logs>() {
+        APIService.Factory.getIntance().createMobileUnitLog(networks.get_id(),
+                networks.getCarCode(),
+                "La unidad ha cambiado su status a: "+ status + ", responble de la unidad: " + name)
+                .enqueue(new Callback<MobileUnitLog>() {
             @Override
-            public void onResponse(Call<Logs> call, Response<Logs> response) {
+            public void onResponse(Call<MobileUnitLog> call, Response<MobileUnitLog> response) {
 
                 //code == 200
                 if(response.isSuccessful()) {
@@ -159,7 +157,7 @@ public class NetworkFragment extends Fragment {
             }
 
             @Override
-            public void onFailure(Call<Logs> call, Throwable t){
+            public void onFailure(Call<MobileUnitLog> call, Throwable t){
                 //
                 Log.d("myTag", "This is my message on failure " + call.request().url());
             }

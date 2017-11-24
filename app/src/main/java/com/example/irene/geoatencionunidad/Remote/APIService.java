@@ -5,6 +5,8 @@ import com.example.irene.geoatencionunidad.Model.Alarmas;
 import com.example.irene.geoatencionunidad.Model.CategoriaServicios;
 import com.example.irene.geoatencionunidad.Model.FirebaseToken;
 import com.example.irene.geoatencionunidad.Model.Logs;
+import com.example.irene.geoatencionunidad.Model.MobileUnitHistory;
+import com.example.irene.geoatencionunidad.Model.MobileUnitLog;
 import com.example.irene.geoatencionunidad.Model.Networks;
 import com.example.irene.geoatencionunidad.Model.Solicitudes;
 import com.example.irene.geoatencionunidad.Model.Users;
@@ -30,7 +32,7 @@ import retrofit2.http.Path;
 public interface APIService {
 
     String BASE_URL = "http://192.168.0.150:3000/";
-    //String BASE_URL = "http://10.0.0.41:3000/";
+    //String BASE_URL = "http://10.0.0.19:3000/";
 
 
     //@Headers("Content-Type: application/json")
@@ -51,6 +53,13 @@ public interface APIService {
                                        @Field("lng") String lng,
                                        @Field("address") String address);
 
+    @POST("/api/mobileunithistories")
+    @FormUrlEncoded
+    Call<MobileUnitHistory> updateHistoryLocation(@Field("mobileUnit") String mobileUnit,
+                                                  @Field("latitude") String latitude,
+                                                  @Field("longitude") String longitude,
+                                                  @Field("address") String address);
+
     @POST("/api/logs")
     @FormUrlEncoded
     Call<Logs> createLog(@Field("description") String description,
@@ -58,6 +67,12 @@ public interface APIService {
                          @Field("network") String network,
                          @Field("client") String client,
                          @Field("organism") String organism);
+
+    @POST("/api/mobileunitlogs")
+    @FormUrlEncoded
+    Call<MobileUnitLog> createMobileUnitLog(@Field("mobileUnit") String mobileUnit,
+                                            @Field("mobileUnitCarCode") String mobileUnitCarCode,
+                                            @Field("description") String description);
 
     @GET("api/networks")
     Call<List<Networks>> listNetworks();
