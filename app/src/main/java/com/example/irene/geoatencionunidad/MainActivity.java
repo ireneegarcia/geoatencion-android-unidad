@@ -92,6 +92,8 @@ public class MainActivity extends AppCompatActivity
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            SharedPreferences settings = getSharedPreferences("perfil", MODE_PRIVATE);
+            settings.edit().clear().commit();
             Intent intent = new Intent (this, LoginActivity.class);
             startActivityForResult(intent, 0);
             finish();

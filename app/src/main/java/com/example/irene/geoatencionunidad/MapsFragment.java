@@ -94,6 +94,7 @@ public class MapsFragment extends Fragment {
     MapView mMapView;
     private static GoogleMap googleMap;
 
+    LocationManager mlocManager;
     //Coordenadas de ubicación
     public static Location mCurrentLocation;
     public static Location mCurrentLocationPush;
@@ -185,7 +186,7 @@ public class MapsFragment extends Fragment {
 
 
     private void locationStart() {
-        LocationManager mlocManager = (LocationManager) c.getSystemService(Context.LOCATION_SERVICE);
+        /*LocationManager*/ mlocManager = (LocationManager) c.getSystemService(Context.LOCATION_SERVICE);
         Localizacion Local = new Localizacion();
         // Local.setMainActivity(c);
         final boolean gpsEnabled = mlocManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
@@ -316,32 +317,37 @@ public class MapsFragment extends Fragment {
             // Este metodo se ejecuta cada vez que el GPS recibe nuevas coordenadas
             // debido a la deteccion de un cambio de ubicacion
 
+            SharedPreferences settings = c.getSharedPreferences("perfil", Context.MODE_PRIVATE);
+            if (settings.getString("id", null) == null) {
+                mlocManager.removeUpdates(this);
+                mlocManager = null;
+            } else {
+                if (!notificacion.equals("")) {
+                    AlertDialog alert = createSimpleDialog(notificacion);
+                    alert.show();
+                    Log.d("notificacion", "paso por aqui, notificacion: " + notificacion);
+                    notificacion = "";
 
-            if (!notificacion.equals("")) {
-                AlertDialog alert = createSimpleDialog(notificacion);
-                alert.show();
-                Log.d("notificacion", "paso por aqui, notificacion: "+notificacion);
-                notificacion = "";
-
-            }
+                }
             /*if (!notificacionUbicacion.equals("esperando") && !notificacionUbicacion.equals("en atencion")) {
                 Log.d("my tag", "paso por aqui");
             }*/
 
-            obtenerAlarmas();
-            googleMap.clear();
-            loc.getLatitude();
-            loc.getLongitude();
-            mCurrentLocation = loc;
-            String Text = "onLocationChanged Mi ubicacion actual es: " + "\n Lat = "
-                    + mCurrentLocation.getLatitude() + "\n Long = " + mCurrentLocation.getLongitude();
-            //  mensaje1.setText(Text);
-            Log.d("my tag", Text);
+                obtenerAlarmas();
+                googleMap.clear();
+                loc.getLatitude();
+                loc.getLongitude();
+                mCurrentLocation = loc;
+                String Text = "onLocationChanged Mi ubicacion actual es: " + "\n Lat = "
+                        + mCurrentLocation.getLatitude() + "\n Long = " + mCurrentLocation.getLongitude();
+                //  mensaje1.setText(Text);
+                Log.d("my tag", Text);
 
-            mLastUpdateTime = DateFormat.getTimeInstance().format(new Date());
-            mLastUpdateDate = DateFormat.getDateInstance().format(new Date());
-            setLocation();
+                mLastUpdateTime = DateFormat.getTimeInstance().format(new Date());
+                mLastUpdateDate = DateFormat.getDateInstance().format(new Date());
+                setLocation();
 
+            }
         }
 
         @Override
