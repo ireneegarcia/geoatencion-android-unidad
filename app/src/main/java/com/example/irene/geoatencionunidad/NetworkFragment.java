@@ -106,6 +106,15 @@ public class NetworkFragment extends Fragment {
             change_button.setText("Cambiar a activo");
         }
 
+        if (networks.getStatus().equals("fuera de servicio")) {
+            status = "fuera de servicio";
+            change_button.setVisibility(View.GONE);
+        }
+
+        if (networks.getStatus().equals("ocupado")) {
+            change_button.setVisibility(View.GONE);
+        }
+
         change_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

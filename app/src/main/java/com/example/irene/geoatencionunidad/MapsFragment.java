@@ -250,7 +250,7 @@ public class MapsFragment extends Fragment {
     public void sendLocation(){
 
 
-        if (onMap == true) {
+        if (onMap == true && networks != null && mCurrentLocation != null) {
             /*Log.d("sendLocation", ""+networks.get_id());
             Log.d("sendLocation", ""+mCurrentLocation.getLatitude());
             Log.d("sendLocation", ""+mCurrentLocation.getLongitude());*/
@@ -445,49 +445,50 @@ public class MapsFragment extends Fragment {
     public void obtenerAlarmas(){
 
         alarma = new ArrayList<>();
-        APIService.Factory.getIntance().listAlarms().enqueue(new Callback<List<Alarmas>>() {
+        if ( networks != null) {
+            APIService.Factory.getIntance().listAlarms().enqueue(new Callback<List<Alarmas>>() {
 
-            @Override
-            public void onResponse(Call<List<Alarmas>> call, Response<List<Alarmas>> response) {
-                //Logs.d("myTag", "--->bien " + call.request().url());
+                @Override
+                public void onResponse(Call<List<Alarmas>> call, Response<List<Alarmas>> response) {
+                    //Logs.d("myTag", "--->bien " + call.request().url());
 
-                if(response.isSuccessful()) {
+                    if(response.isSuccessful()) {
 
-                    for (int i = 0; i< response.body().size(); i++){
-                        // si la alarma pertenece al usuario
-                        if(response.body().get(i).getNetwork().equals(networks.get_id()) &&
-                                response.body().get(i).getStatus().equals("en atencion")){
-                            alarma.add(response.body().get(i));
+                        for (int i = 0; i< response.body().size(); i++){
+                            // si la alarma pertenece al usuario
+                            if(response.body().get(i).getNetwork().equals(networks.get_id()) &&
+                                    response.body().get(i).getStatus().equals("en atencion")){
+                                alarma.add(response.body().get(i));
 
-                            isprocess = true;
+                                isprocess = true;
 
-                            MarkerOptions options = new MarkerOptions();
-                            IconGenerator iconFactory = new IconGenerator(cp);
-                            iconFactory.setStyle(IconGenerator.STYLE_BLUE);
-                            options.icon(BitmapDescriptorFactory.fromBitmap(iconFactory.makeIcon(DateFormat.getTimeInstance().format(new Date()))));
-                            options.anchor(iconFactory.getAnchorU(), iconFactory.getAnchorV());
-                            //options.title("Mi posición actual");
-                            options.snippet(response.body().get(i).getAddress());
+                                MarkerOptions options = new MarkerOptions();
+                                IconGenerator iconFactory = new IconGenerator(cp);
+                                iconFactory.setStyle(IconGenerator.STYLE_BLUE);
+                                options.icon(BitmapDescriptorFactory.fromBitmap(iconFactory.makeIcon(DateFormat.getTimeInstance().format(new Date()))));
+                                options.anchor(iconFactory.getAnchorU(), iconFactory.getAnchorV());
+                                //options.title("Mi posición actual");
+                                options.snippet(response.body().get(i).getAddress());
 
-                            LatLng currentLatLng = new LatLng(Double.parseDouble(response.body().get(i).getLatitude()), Double.parseDouble(response.body().get(i).getLongitude()));
-                            options.position(currentLatLng);
-                            Marker mapMarker = googleMap.addMarker(options);
-                            mapMarker.setTitle(response.body().get(i).getUser().getDisplayName());
-                            Log.d("my tag", "Marcador añadido.............................");
-                            // For zooming automatically to the location of the marker
+                                LatLng currentLatLng = new LatLng(Double.parseDouble(response.body().get(i).getLatitude()), Double.parseDouble(response.body().get(i).getLongitude()));
+                                options.position(currentLatLng);
+                                Marker mapMarker = googleMap.addMarker(options);
+                                mapMarker.setTitle(response.body().get(i).getUser().getDisplayName());
+                                Log.d("my tag", "Marcador añadido.............................");
+                                // For zooming automatically to the location of the marker
                             /*googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng,
                                     14));*/
-                            Log.d("my tag", "Zoom hecho.............................");
-                            Log.d("makeurl", " "+ response.body().get(i).getLatitude());
-                            Log.d("makeurl", " "+ response.body().get(i).getLongitude());
-                            Log.d("makeurl", " "+ networks.getLatitude());
-                            Log.d("makeurl", " "+ networks.getLongitude());
-                            Log.d("makeurl", " ");
-                            makeURL(Double.parseDouble(response.body().get(i).getLatitude()),
-                                    Double.parseDouble(response.body().get(i).getLongitude()),
-                                    Double.parseDouble(networks.getLatitude()),
-                                    Double.parseDouble(networks.getLongitude()));
-                        }
+                                Log.d("my tag", "Zoom hecho.............................");
+                                Log.d("makeurl", " "+ response.body().get(i).getLatitude());
+                                Log.d("makeurl", " "+ response.body().get(i).getLongitude());
+                                Log.d("makeurl", " "+ networks.getLatitude());
+                                Log.d("makeurl", " "+ networks.getLongitude());
+                                Log.d("makeurl", " ");
+                                makeURL(Double.parseDouble(response.body().get(i).getLatitude()),
+                                        Double.parseDouble(response.body().get(i).getLongitude()),
+                                        Double.parseDouble(networks.getLatitude()),
+                                        Double.parseDouble(networks.getLongitude()));
+                            }
                         /*if ((response.body().get(i).getStatus().equals("cancelado por el cliente") ||
                                 response.body().get(i).getStatus().equals("cancelado por el operador"))
                                 && isprocess == true) {
@@ -503,21 +504,22 @@ public class MapsFragment extends Fragment {
 
                             AgregarMarcadorPush(notification);
                         }*/
+                        }
+
+                        //filtrado(response.body());
+
+                        //Logs.d("AlarmaFragment", "--->on reponse " + response.body().toString());
+                        //Logs.d("myTag", "--->on reponse " + call.request().url());
                     }
-
-                    //filtrado(response.body());
-
-                    //Logs.d("AlarmaFragment", "--->on reponse " + response.body().toString());
-                    //Logs.d("myTag", "--->on reponse " + call.request().url());
                 }
-            }
 
-            @Override
-            public void onFailure(Call<List<Alarmas>> call, Throwable t) {
-                Log.d("AlarmaFragment", "This is my message on failure " + call.request().url());
-                Log.d("myTag", "This is my message on failure " + t.toString());
-            }
-        });
+                @Override
+                public void onFailure(Call<List<Alarmas>> call, Throwable t) {
+                    Log.d("AlarmaFragment", "This is my message on failure " + call.request().url());
+                    Log.d("myTag", "This is my message on failure " + t.toString());
+                }
+            });
+        }
 
     }
 

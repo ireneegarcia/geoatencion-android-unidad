@@ -119,12 +119,6 @@ public class AlarmFragment extends Fragment {
                     }else{
                         statusAtencion();
                     }
-
-
-                    //filtrado(response.body());
-
-                    //Logs.d("AlarmaFragment", "--->on reponse " + response.body().toString());
-                    //Logs.d("myTag", "--->on reponse " + call.request().url());
                 }
             }
 
@@ -278,6 +272,8 @@ public class AlarmFragment extends Fragment {
                 Log.d("myTag", "This is my message on failure " + call.request().url());
             }
         });
+
+        obtenerUnidad();
     }
 
     public void statusAtencion(){
