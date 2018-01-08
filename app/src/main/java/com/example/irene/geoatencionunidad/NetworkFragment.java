@@ -87,41 +87,52 @@ public class NetworkFragment extends Fragment {
 
     public void adaptarVista(){
 
+        final TextView _unidad = (TextView) mView.findViewById(R.id.textView9);
+        final TextView _status = (TextView) mView.findViewById(R.id.textView11);
         final TextView id_unidad = (TextView) mView.findViewById(R.id.id_unidad);
         final TextView status_unidad = (TextView) mView.findViewById(R.id.status_unidad);
         final Button change_button = (Button) mView.findViewById(R.id.change_button);
 
-        id_unidad.setText(networks.getCarCode());
-        status_unidad.setText(networks.getStatus());
+        if (networks != null) {
 
-        if (networks.getStatus().equals("activo")) {
-            status = "inactivo";
-            change_button.setVisibility(View.VISIBLE);
-            change_button.setText("Cambiar a inactivo");
-        }
 
-        if (networks.getStatus().equals("inactivo")) {
-            status = "activo";
-            change_button.setVisibility(View.VISIBLE);
-            change_button.setText("Cambiar a activo");
-        }
+            id_unidad.setText(networks.getCarCode());
+            status_unidad.setText(networks.getStatus());
 
-        if (networks.getStatus().equals("fuera de servicio")) {
-            status = "fuera de servicio";
-            change_button.setVisibility(View.GONE);
-        }
-
-        if (networks.getStatus().equals("ocupado")) {
-            change_button.setVisibility(View.GONE);
-        }
-
-        change_button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                cambiarStatus();
+            if (networks.getStatus().equals("activo")) {
+                status = "inactivo";
+                change_button.setVisibility(View.VISIBLE);
+                change_button.setText("Cambiar a inactivo");
             }
-        });
 
+            if (networks.getStatus().equals("inactivo")) {
+                status = "activo";
+                change_button.setVisibility(View.VISIBLE);
+                change_button.setText("Cambiar a activo");
+            }
+
+            if (networks.getStatus().equals("fuera de servicio")) {
+                status = "fuera de servicio";
+                change_button.setVisibility(View.GONE);
+            }
+
+            if (networks.getStatus().equals("ocupado")) {
+                change_button.setVisibility(View.GONE);
+            }
+
+            change_button.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    cambiarStatus();
+                }
+            });
+        }else {
+            change_button.setVisibility(View.GONE);
+            id_unidad.setVisibility(View.GONE);
+            status_unidad.setVisibility(View.GONE);
+            _status.setVisibility(View.GONE);
+            _unidad.setText("No posee unidad asignada");
+        }
     }
 
     public void cambiarStatus(){
@@ -156,21 +167,21 @@ public class NetworkFragment extends Fragment {
                 networks.getCarCode(),
                 "La unidad ha cambiado su status a: "+ status + ", responble de la unidad: " + name)
                 .enqueue(new Callback<MobileUnitLog>() {
-            @Override
-            public void onResponse(Call<MobileUnitLog> call, Response<MobileUnitLog> response) {
+                    @Override
+                    public void onResponse(Call<MobileUnitLog> call, Response<MobileUnitLog> response) {
 
-                //code == 200
-                if(response.isSuccessful()) {
-                    Log.d("my tag", "onResponse: todo fino DEL LOG");
-                }
-            }
+                        //code == 200
+                        if(response.isSuccessful()) {
+                            Log.d("my tag", "onResponse: todo fino DEL LOG");
+                        }
+                    }
 
-            @Override
-            public void onFailure(Call<MobileUnitLog> call, Throwable t){
-                //
-                Log.d("myTag", "This is my message on failure " + call.request().url());
-            }
-        });
+                    @Override
+                    public void onFailure(Call<MobileUnitLog> call, Throwable t){
+                        //
+                        Log.d("myTag", "This is my message on failure " + call.request().url());
+                    }
+                });
 
 
     }

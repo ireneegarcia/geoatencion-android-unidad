@@ -96,39 +96,40 @@ public class AlarmFragment extends Fragment {
 
     }
     public void obtenerAlarmas(){
+        if (networks != null) {
 
-        alarma = new ArrayList<>();
-        APIService.Factory.getIntance().listAlarms().enqueue(new Callback<List<Alarmas>>() {
+            alarma = new ArrayList<>();
+            APIService.Factory.getIntance().listAlarms().enqueue(new Callback<List<Alarmas>>() {
 
-            @Override
-            public void onResponse(Call<List<Alarmas>> call, Response<List<Alarmas>> response) {
-                //Logs.d("myTag", "--->bien " + call.request().url());
+                @Override
+                public void onResponse(Call<List<Alarmas>> call, Response<List<Alarmas>> response) {
+                    //Logs.d("myTag", "--->bien " + call.request().url());
 
-                if(response.isSuccessful()) {
+                    if (response.isSuccessful()) {
 
-                    for (int i = 0; i< response.body().size(); i++){
-                        // si la alarma pertenece al usuario
-                        if(response.body().get(i).getNetwork().equals(networks.get_id()) &&
-                                !response.body().get(i).getStatus().equals("atendido")  ){
-                            alarma.add(response.body().get(i));
+                        for (int i = 0; i < response.body().size(); i++) {
+                            // si la alarma pertenece al usuario
+                            if (response.body().get(i).getNetwork().equals(networks.get_id()) &&
+                                    !response.body().get(i).getStatus().equals("atendido")) {
+                                alarma.add(response.body().get(i));
+                            }
+                        }
+
+                        if (alarma.size() != 0) {
+                            obtenerCliente();
+                        } else {
+                            statusAtencion();
                         }
                     }
-
-                    if (alarma.size() != 0) {
-                        obtenerCliente();
-                    }else{
-                        statusAtencion();
-                    }
                 }
-            }
 
-            @Override
-            public void onFailure(Call<List<Alarmas>> call, Throwable t) {
-                Log.d("AlarmaFragment", "This is my message on failure " + call.request().url());
-                Log.d("myTag", "This is my message on failure " + t.toString());
-            }
-        });
-
+                @Override
+                public void onFailure(Call<List<Alarmas>> call, Throwable t) {
+                    Log.d("AlarmaFragment", "This is my message on failure " + call.request().url());
+                    Log.d("myTag", "This is my message on failure " + t.toString());
+                }
+            });
+        }
     }
 
     public void obtenerCliente(){
@@ -332,17 +333,7 @@ public class AlarmFragment extends Fragment {
         if (alarma.size() == 0) {
             imageStatusA2.setVisibility(View.VISIBLE);
             status2.setText("Sin asignación de atención");
-            /*status2.setText("Sin asignación de atención");
-            status1.setVisibility(View.GONE);
-            imageStatusA.setVisibility(View.GONE);
-            imageStatusP.setVisibility(View.VISIBLE);
-            imageStatusA1.setVisibility(View.GONE);
-            imageStatusP1.setVisibility(View.GONE);*/
-            //cancelar.setVisibility(View.GONE);
-            //atendido.setVisibility(View.GONE);
-            //row.setVisibility(View.GONE);
 
-            // message.setVisibility(View.VISIBLE);
             textView7.setVisibility(View.GONE);
             imageView3.setVisibility(View.GONE);
             button_done.setVisibility(View.GONE);
