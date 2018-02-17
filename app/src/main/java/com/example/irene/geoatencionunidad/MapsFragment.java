@@ -4,6 +4,7 @@ package com.example.irene.geoatencionunidad;
 import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -25,7 +26,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
@@ -44,7 +44,6 @@ import com.example.irene.geoatencionunidad.Model.RouteGet;
 import com.example.irene.geoatencionunidad.Model.RouteSet;
 import com.example.irene.geoatencionunidad.Remote.APIService;
 import com.example.irene.geoatencionunidad.Remote.APIServiceRoute;
-import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
@@ -59,6 +58,8 @@ import com.google.maps.android.ui.IconGenerator;
 
 import java.io.IOException;
 import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -418,14 +419,15 @@ public class MapsFragment extends Fragment {
             public void onResponse(Call<List<Networks>> call, Response<List<Networks>> response) {
 
                 //code == 200
-                if(response.isSuccessful()) {
+                if(response.isSuccessful() && response.body().size() != 0) {
 
                     for (int i = 0; i< response.body().size(); i++){
                         // si la unidad pertenece al usuario
                         Log.d("obtenerunidad", ""+response.body().get(i).getServiceUser());
                         if(response.body().get(i).getServiceUser() != null && response.body().get(i).getServiceUser().equals(mId)){
                             networks = response.body().get(i);
-
+                            Log.d("unidad", networks.get_id());
+                            Log.d("unidad", networks.getLatitude());
                         }
                     }
                     obtenerAlarmas();
@@ -452,7 +454,7 @@ public class MapsFragment extends Fragment {
                 public void onResponse(Call<List<Alarmas>> call, Response<List<Alarmas>> response) {
                     //Logs.d("myTag", "--->bien " + call.request().url());
 
-                    if(response.isSuccessful()) {
+                    if(response.isSuccessful() && response.body().size() != 0) {
 
                         for (int i = 0; i< response.body().size(); i++){
                             // si la alarma pertenece al usuario
@@ -465,29 +467,52 @@ public class MapsFragment extends Fragment {
                                 MarkerOptions options = new MarkerOptions();
                                 IconGenerator iconFactory = new IconGenerator(cp);
                                 iconFactory.setStyle(IconGenerator.STYLE_BLUE);
-                                options.icon(BitmapDescriptorFactory.fromBitmap(iconFactory.makeIcon(DateFormat.getTimeInstance().format(new Date()))));
-                                options.anchor(iconFactory.getAnchorU(), iconFactory.getAnchorV());
-                                //options.title("Mi posición actual");
-                                options.snippet(response.body().get(i).getAddress());
 
-                                LatLng currentLatLng = new LatLng(Double.parseDouble(response.body().get(i).getLatitude()), Double.parseDouble(response.body().get(i).getLongitude()));
-                                options.position(currentLatLng);
-                                Marker mapMarker = googleMap.addMarker(options);
-                                mapMarker.setTitle(response.body().get(i).getUser().getDisplayName());
-                                Log.d("my tag", "Marcador añadido.............................");
-                                // For zooming automatically to the location of the marker
+                                //long diffTime = mCurrentLocation.getTime() - (new Date(alarma.get(0).getCreated())).getTime();
+                                if (mCurrentLocation != null) {
+                                    SimpleDateFormat formatI = new SimpleDateFormat("yyy-MM-dd'T'HH:mm:ss", Locale.US);
+                                    try {
+                                        Date alarmCreated = formatI.parse(alarma.get(0).getCreated());
+                                        Log.d("diffTime2", ""+alarmCreated);
+                                        Log.d("diffTime1", ""+mCurrentLocation.getTime());
+                                        long timeDiff = mCurrentLocation.getTime() - alarmCreated.getTime();
+                                        double diffHours = Math.floor(timeDiff / 3600000); // horas
+                                        double diffMins = Math.round(timeDiff / (60000)); // minutos
+
+                                        //options.icon(BitmapDescriptorFactory.fromBitmap(iconFactory.makeIcon(DateFormat.getTimeInstance().format(new Date()))));
+                                        options.icon(BitmapDescriptorFactory.fromBitmap(iconFactory.makeIcon("Tiempo esperando: " + (int)diffMins +" min")));
+
+                                        options.anchor(iconFactory.getAnchorU(), iconFactory.getAnchorV());
+                                        //options.title("Mi posición actual");
+                                        options.snippet(response.body().get(i).getAddress());
+
+                                        LatLng currentLatLng = new LatLng(Double.parseDouble(response.body().get(i).getLatitude()), Double.parseDouble(response.body().get(i).getLongitude()));
+                                        options.position(currentLatLng);
+                                        Marker mapMarker = googleMap.addMarker(options);
+                                        //mapMarker.setTitle(response.body().get(i).getUser().getDisplayName());
+                                        mapMarker.setTitle("Tiempo esperando: " + (int)diffMins +" min");
+                                        Log.d("my tag", "Marcador añadido.............................");
+                                        // For zooming automatically to the location of the marker
                             /*googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng,
                                     14));*/
-                                Log.d("my tag", "Zoom hecho.............................");
-                                Log.d("makeurl", " "+ response.body().get(i).getLatitude());
-                                Log.d("makeurl", " "+ response.body().get(i).getLongitude());
-                                Log.d("makeurl", " "+ networks.getLatitude());
-                                Log.d("makeurl", " "+ networks.getLongitude());
-                                Log.d("makeurl", " ");
-                                makeURL(Double.parseDouble(response.body().get(i).getLatitude()),
-                                        Double.parseDouble(response.body().get(i).getLongitude()),
-                                        Double.parseDouble(networks.getLatitude()),
-                                        Double.parseDouble(networks.getLongitude()));
+                                        Log.d("my tag", "Zoom hecho.............................");
+                                        Log.d("makeurl", " "+ response.body().get(i).getLatitude());
+                                        Log.d("makeurl", " "+ response.body().get(i).getLongitude());
+                                        Log.d("makeurl", " "+ networks.getLatitude());
+                                        Log.d("makeurl", " "+ networks.getLongitude());
+                                        Log.d("makeurl", " ");
+                                        makeURL(Double.parseDouble(response.body().get(i).getLatitude()),
+                                                Double.parseDouble(response.body().get(i).getLongitude()),
+                                                Double.parseDouble(networks.getLatitude()),
+                                                Double.parseDouble(networks.getLongitude()));
+
+                                        Log.d("diffTime3", " horas: "+((int)diffHours) + "minutos: "+((int)diffMins ));
+                                    } catch (ParseException e) {
+                                        e.printStackTrace();
+                                    }
+
+                                }
+
                             }
                         /*if ((response.body().get(i).getStatus().equals("cancelado por el cliente") ||
                                 response.body().get(i).getStatus().equals("cancelado por el operador"))
@@ -536,7 +561,7 @@ public class MapsFragment extends Fragment {
             public void onResponse(Call<RouteGet> call, Response<RouteGet> response) {
 
                 //code == 200
-                if(response.isSuccessful() && response.body().getRoutes().size() != 0) {
+                if(response.isSuccessful() && response.body().getRoutes().size() != 0 && response.body().getRoutes().get(0).getLegs().size() != 0) {
                     routeGet = response.body();
 
                     Log.d("routeGet", " "+routeGet.getRoutes().toString());
@@ -549,7 +574,7 @@ public class MapsFragment extends Fragment {
                         Polyline line = googleMap.addPolyline(new PolylineOptions()
                                 .add(new LatLng(Double.parseDouble(routeGet.getRoutes().get(0).getLegs().get(0).getSteps().get(i).getStartLocation().getLat()),
                                                 Double.parseDouble(routeGet.getRoutes().get(0).getLegs().get(0).getSteps().get(i).getStartLocation().getLng())),
-                                     new LatLng(Double.parseDouble(routeGet.getRoutes().get(0).getLegs().get(0).getSteps().get(i).getEndLocation().getLat()),
+                                        new LatLng(Double.parseDouble(routeGet.getRoutes().get(0).getLegs().get(0).getSteps().get(i).getEndLocation().getLat()),
                                                 Double.parseDouble(routeGet.getRoutes().get(0).getLegs().get(0).getSteps().get(i).getEndLocation().getLng())))
                                 .width(5)
                                 .color(Color.RED)
@@ -661,21 +686,21 @@ public class MapsFragment extends Fragment {
                         ", por la unidad: " + networks.getCarCode()+
                         ", cuyo responsable es: "+name)
                 .enqueue(new Callback<MobileUnitLog>() {
-            @Override
-            public void onResponse(Call<MobileUnitLog> call, Response<MobileUnitLog> response) {
+                    @Override
+                    public void onResponse(Call<MobileUnitLog> call, Response<MobileUnitLog> response) {
 
-                //code == 200
-                if(response.isSuccessful()) {
-                    Log.d("my tag", "onResponse: todo fino DEL LOG");
-                }
-            }
+                        //code == 200
+                        if(response.isSuccessful()) {
+                            Log.d("my tag", "onResponse: todo fino DEL LOG");
+                        }
+                    }
 
-            @Override
-            public void onFailure(Call<MobileUnitLog> call, Throwable t){
-                //
-                Log.d("myTag", "This is my message on failure " + call.request().url());
-            }
-        });
+                    @Override
+                    public void onFailure(Call<MobileUnitLog> call, Throwable t){
+                        //
+                        Log.d("myTag", "This is my message on failure " + call.request().url());
+                    }
+                });
     }
     public void nuevaAlerta(){
         alarma.clear();
@@ -713,15 +738,15 @@ public class MapsFragment extends Fragment {
         final ImageView imageStatusP3 = (ImageView) layout.findViewById(R.id.imageViewProcesed2);
         final TableRow row = (TableRow) layout.findViewById(R.id.row_status);
         final RelativeLayout message = layout.findViewById(R.id.message);
-        final Button cancelar = (Button) layout.findViewById(R.id.cancelar);
+        // final Button cancelar = (Button) layout.findViewById(R.id.cancelar);
         //final Button nueva_alarma = (Button) layout.findViewById(R.id.nueva_alarma);
 
-        cancelar.setOnClickListener(new View.OnClickListener() {
+        /*cancelar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 actualizarAlarma();
             }
-        });
+        });*/
 
         categorias = (ListView) layout.findViewById(R.id.listViewCategorias);
 
@@ -753,7 +778,14 @@ public class MapsFragment extends Fragment {
                 progreso.setVisibility(View.GONE);
                 categorias.setVisibility(View.GONE);
                 message.setVisibility(View.VISIBLE);
-                cancelar.setVisibility(View.VISIBLE);
+                builder.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
+
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                        dialog.cancel();
+                    }}
+                );
             }
             else if (statusAtencion.equals("cancelado por el operador")){
                 status.setText("Alarma recibida de manera exitosa");
@@ -798,6 +830,7 @@ public class MapsFragment extends Fragment {
         MarkerOptions options = new MarkerOptions();
         IconGenerator iconFactory = new IconGenerator(c);
         iconFactory.setStyle(IconGenerator.STYLE_ORANGE);
+
         options.icon(BitmapDescriptorFactory.fromBitmap(iconFactory.makeIcon(mLastUpdateTime)));
         options.anchor(iconFactory.getAnchorU(), iconFactory.getAnchorV());
         //options.title("Mi posición actual");
@@ -811,8 +844,8 @@ public class MapsFragment extends Fragment {
         mapMarker.setTitle("Mi posición actual");
         Log.d("my tag", "Marcador añadido.............................");
         // For zooming automatically to the location of the marker
-        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng,
-                14));
+        /*googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng,
+                14));*/
         Log.d("my tag", "Zoom hecho.............................");
 
     }
@@ -840,20 +873,40 @@ public class MapsFragment extends Fragment {
                 MarkerOptions options = new MarkerOptions();
                 IconGenerator iconFactory = new IconGenerator(cp);
                 iconFactory.setStyle(IconGenerator.STYLE_BLUE);
-                options.icon(BitmapDescriptorFactory.fromBitmap(iconFactory.makeIcon(DateFormat.getTimeInstance().format(new Date()))));
-                options.anchor(iconFactory.getAnchorU(), iconFactory.getAnchorV());
-                //options.title("Mi posición actual");
-                options.snippet(noti.getClientAddress());
 
-                LatLng currentLatLng = new LatLng(Double.parseDouble(noti.getClientLatitude()), Double.parseDouble(noti.getClientLongitude()));
-                options.position(currentLatLng);
-                Marker mapMarker = googleMap.addMarker(options);
-                mapMarker.setTitle(noti.getClientName());
-                Log.d("my tag", "Marcador añadido.............................");
-                // For zooming automatically to the location of the marker
-                googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng,
-                        14));
-                Log.d("my tag", "Zoom hecho.............................");
+                //long diffTime = mCurrentLocation.getTime() - (new Date(alarma.get(0).getCreated())).getTime();
+                if (mCurrentLocation != null) {
+                    SimpleDateFormat formatI = new SimpleDateFormat("yyy-MM-dd'T'HH:mm:ss", Locale.US);
+                    try {
+                        Date alarmCreated = formatI.parse(alarma.get(0).getCreated());
+                        Log.d("diffTime2", ""+alarmCreated);
+                        Log.d("diffTime1", ""+mCurrentLocation.getTime());
+                        long timeDiff = mCurrentLocation.getTime() - alarmCreated.getTime();
+                        double diffHours = Math.floor(timeDiff / 3600000); // horas
+                        double diffMins = Math.round(timeDiff / (60000)); // minutos
+
+                        Log.d("diffTime3", " horas: "+((int)diffHours) + "minutos: "+((int)diffMins ));
+                        //options.icon(BitmapDescriptorFactory.fromBitmap(iconFactory.makeIcon(DateFormat.getTimeInstance().format(new Date()))));
+                        options.icon(BitmapDescriptorFactory.fromBitmap(iconFactory.makeIcon("Tiempo esperando: " + (int)diffMins +" min")));
+                        options.anchor(iconFactory.getAnchorU(), iconFactory.getAnchorV());
+                        //options.title("Mi posición actual");
+                        options.snippet(noti.getClientAddress());
+
+                        LatLng currentLatLng = new LatLng(Double.parseDouble(noti.getClientLatitude()), Double.parseDouble(noti.getClientLongitude()));
+                        options.position(currentLatLng);
+                        Marker mapMarker = googleMap.addMarker(options);
+                        //mapMarker.setTitle(noti.getClientName());
+                        mapMarker.setTitle("Tiempo esperando: " + (int)diffMins +" min");
+                        Log.d("my tag", "Marcador añadido.............................");
+                        // For zooming automatically to the location of the marker
+                /*googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng,
+                        14));*/
+                        Log.d("my tag", "Zoom hecho.............................");
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
+                }
+
             }
             notificacion = (noti.getStatus());
             //notificacionId| = (noti.getI);

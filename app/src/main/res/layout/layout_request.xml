@@ -124,23 +124,6 @@
 
         </TableLayout>
 
-        <Button
-            android:id="@+id/cancelar"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentRight="true"
-            android:layout_below="@+id/message"
-            android:layout_marginBottom="24px"
-            android:layout_marginEnd="24dp"
-            android:layout_marginRight="24dp"
-            android:layout_marginTop="146dp"
-            android:background="@drawable/button_border_cancel"
-            android:text="Cancelar"
-            android:textColor="@android:color/background_light"
-            android:textStyle="bold"
-            android:visibility="gone" />
-
         <ProgressBar
             android:id="@+id/progressBarMessage"
             style="?android:attr/progressBarStyle"
