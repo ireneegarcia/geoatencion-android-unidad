@@ -10,6 +10,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.ProgressBar;
+import android.widget.TableLayout;
 import android.widget.TextView;
 
 import com.example.irene.geoatencionunidad.Model.MobileUnitLog;
@@ -87,11 +90,20 @@ public class NetworkFragment extends Fragment {
 
     public void adaptarVista(){
 
+        final ProgressBar progreso = (ProgressBar) mView.findViewById(R.id.progressBarMessage);
         final TextView _unidad = (TextView) mView.findViewById(R.id.textView9);
         final TextView _status = (TextView) mView.findViewById(R.id.textView11);
         final TextView id_unidad = (TextView) mView.findViewById(R.id.id_unidad);
         final TextView status_unidad = (TextView) mView.findViewById(R.id.status_unidad);
         final Button change_button = (Button) mView.findViewById(R.id.change_button);
+        final TableLayout tabla_unidad = (TableLayout) mView.findViewById(R.id.tableLayout);
+        final TextView datos_unidad = (TextView) mView.findViewById(R.id.textView7);
+        final ImageView datos_unidad_imagen = (ImageView) mView.findViewById(R.id.imageView3);
+
+        tabla_unidad.setVisibility(View.VISIBLE);
+        datos_unidad.setVisibility(View.VISIBLE);
+        datos_unidad_imagen.setVisibility(View.VISIBLE);
+        progreso.setVisibility(View.GONE);
 
         if (networks != null) {
 
