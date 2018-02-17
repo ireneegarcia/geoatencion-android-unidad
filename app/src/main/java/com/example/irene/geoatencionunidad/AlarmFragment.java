@@ -2,9 +2,11 @@ package com.example.irene.geoatencionunidad;
 
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,6 +14,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TableLayout;
 import android.widget.TableRow;
@@ -110,13 +113,14 @@ public class AlarmFragment extends Fragment {
                         for (int i = 0; i < response.body().size(); i++) {
                             // si la alarma pertenece al usuario
                             if (response.body().get(i).getNetwork().equals(networks.get_id()) &&
-                                    !response.body().get(i).getStatus().equals("atendido")) {
+                                    response.body().get(i).getStatus().equals("en atencion")) {
                                 alarma.add(response.body().get(i));
                             }
                         }
 
                         if (alarma.size() != 0) {
                             obtenerCliente();
+                            Log.d("respuesta", "no hay alarma");
                         } else {
                             statusAtencion();
                         }
@@ -159,7 +163,45 @@ public class AlarmFragment extends Fragment {
             }
         });
     }
+
+    public void actualizarUnidad(){
+        networks.setStatus("activo");
+
+        // Actualizar la unidad de atencion
+        APIService.Factory.getIntance().updateNetwork(networks.get_id(), networks).enqueue(new Callback<Networks>() {
+            @Override
+            public void onResponse(Call<Networks> call, Response<Networks> response) {
+
+                //code == 200
+                if(response.isSuccessful()) {
+                    Log.d("respuesta", "actualizada la unidad");
+                    obtenerAlarmas();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Networks> call, Throwable t){
+                //
+                Log.d("myTag", "This is my message on failure " + call.request().url());
+            }
+        });
+    }
+
     public void actualizarAlarma(String status, String icon, String textLog){
+
+        final RelativeLayout message = mView.findViewById(R.id.message);
+        final TableLayout button_done = (TableLayout) mView.findViewById(R.id.button_done);
+        final LinearLayout linearLayout = (LinearLayout) mView.findViewById(R.id.linearLayout);
+        final ImageView imageView3 = (ImageView) mView.findViewById(R.id.imageView3);
+        final TextView textView7 = (TextView) mView.findViewById(R.id.textView7);
+        final ProgressBar progreso = (ProgressBar) mView.findViewById(R.id.progressBarMessage);
+
+        progreso.setVisibility(View.VISIBLE);
+        message.setVisibility(View.GONE);
+        button_done.setVisibility(View.GONE);
+        linearLayout.setVisibility(View.GONE);
+        imageView3.setVisibility(View.GONE);
+        textView7.setVisibility(View.GONE);
         String networkID;
 
         if (status.equals("cancelado por la unidad")) {
@@ -196,7 +238,8 @@ public class AlarmFragment extends Fragment {
 
                 //code == 200
                 if(response.isSuccessful()) {
-                    Log.d("my tag", "onResponse: todo fino");
+                    Log.d("respuesta", "Actualizada la alarma");
+                    actualizarUnidad();
                 }
             }
 
@@ -206,30 +249,6 @@ public class AlarmFragment extends Fragment {
                 Log.d("myTag", "This is my message on failure " + call.request().url());
             }
         });
-
-        networks.setStatus("activo");
-
-        // Actualizar la unidad de atencion
-        APIService.Factory.getIntance().updateNetwork(networks.get_id(), networks).enqueue(new Callback<Networks>() {
-            @Override
-            public void onResponse(Call<Networks> call, Response<Networks> response) {
-
-                //code == 200
-                if(response.isSuccessful()) {
-                    Log.d("my tag", "onResponse: todo fino DEL LOG");
-                    obtenerAlarmas();
-                }
-            }
-
-            @Override
-            public void onFailure(Call<Networks> call, Throwable t){
-                //
-                Log.d("myTag", "This is my message on failure " + call.request().url());
-            }
-        });
-
-
-
         // Creación de log
         APIService.Factory.getIntance().createLog(
                 log.getDescription(),
@@ -242,14 +261,13 @@ public class AlarmFragment extends Fragment {
 
                 //code == 200
                 if(response.isSuccessful()) {
-                    Log.d("my tag", "onResponse: todo fino DEL LOG");
+                    // Log.d("my tag", "onResponse: todo fino DEL LOG");
                 }
             }
 
             @Override
             public void onFailure(Call<Logs> call, Throwable t){
-                //
-                Log.d("myTag", "This is my message on failure " + call.request().url());
+                // Log.d("myTag", "This is my message on failure " + call.request().url());
             }
         });
 
@@ -263,7 +281,7 @@ public class AlarmFragment extends Fragment {
 
                 //code == 200
                 if(response.isSuccessful()) {
-                    Log.d("my tag", "onResponse: todo fino DEL LOG");
+                    // Log.d("my tag", "onResponse: todo fino DEL LOG");
                 }
             }
 
@@ -273,12 +291,94 @@ public class AlarmFragment extends Fragment {
                 Log.d("myTag", "This is my message on failure " + call.request().url());
             }
         });
+        //obtenerUnidad();
+    }
 
-        obtenerUnidad();
+    public AlertDialog createSimpleDialogCancelar() {
+
+        final AlertDialog.Builder builder = new AlertDialog.Builder(c);
+        final LayoutInflater inflater = (LayoutInflater)c.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+
+        View layout = inflater.inflate(R.layout.layout_request, null);
+        builder.setView(layout);
+
+        //nombre del usuario logueado
+        SharedPreferences settings = c.getSharedPreferences("perfil", c.MODE_PRIVATE);
+        final String name = settings.getString("name", null);
+
+        builder.setTitle("Cancelar solicitud de atención");
+        builder.setMessage("\n¿Está seguro de que desea realizar esta acción?");
+        builder.setPositiveButton("Si, cancelar", new DialogInterface.OnClickListener() {
+
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+                dialog.cancel();
+                actualizarAlarma("cancelado por la unidad",
+                        "/modules/panels/client/img/cancelbynetwork.png",
+                        "Ha sido cancelada la solicitud de atención: " + alarma.get(0).get_id() +
+                                " del cliente: " + alarma.get(0).getUser().getDisplayName() +
+                                ", por la unidad: "+networks.getCarCode()+
+                                ", cuyo responsable es: "+name);
+            }}
+        );
+
+        builder.setNegativeButton("Volver atrás", new DialogInterface.OnClickListener() {
+
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+                dialog.cancel();
+            }}
+        );
+
+        return builder.create();
+    }
+
+    public AlertDialog createSimpleDialogAtendido() {
+
+        final AlertDialog.Builder builder = new AlertDialog.Builder(c);
+        final LayoutInflater inflater = (LayoutInflater)c.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+
+        View layout = inflater.inflate(R.layout.layout_request, null);
+        builder.setView(layout);
+
+        //nombre del usuario logueado
+        SharedPreferences settings = c.getSharedPreferences("perfil", c.MODE_PRIVATE);
+        final String name = settings.getString("name", null);
+
+        builder.setTitle("Terminado atención");
+        builder.setMessage("\n¿Ha terminado exitosamente la atención de esta solicitud?");
+        builder.setPositiveButton("Si", new DialogInterface.OnClickListener() {
+
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+                dialog.cancel();
+                actualizarAlarma("atendido",
+                        "/modules/panels/client/img/done.png",
+                        "Ha sido atendido exitosamente la solicitud de atención:" + alarma.get(0).get_id() +
+                                " del cliente: " + user.getDisplayName()+
+                                ", por la unidad: "+networks.getCarCode()+
+                                ", cuyo responsable es: "+name);
+            }}
+        );
+
+        builder.setNegativeButton("Volver atrás", new DialogInterface.OnClickListener() {
+
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+                dialog.cancel();
+            }}
+        );
+
+        return builder.create();
     }
 
     public void statusAtencion(){
 
+        final ProgressBar progreso = (ProgressBar) mView.findViewById(R.id.progressBarMessage);
         final TextView status = (TextView) mView.findViewById(R.id.textViewMessage);
         final TextView status1 = (TextView) mView.findViewById(R.id.textViewMessage1);
         final TextView status2 = (TextView) mView.findViewById(R.id.textViewMessage2);
@@ -294,7 +394,6 @@ public class AlarmFragment extends Fragment {
         final Button cancelar = (Button) mView.findViewById(R.id.cancelar);
         final Button atendido = (Button) mView.findViewById(R.id.atendido);
         final TableLayout button_done = (TableLayout) mView.findViewById(R.id.button_done);
-
         final TextView textView7 = (TextView) mView.findViewById(R.id.textView7);
         final ImageView imageView3 = (ImageView) mView.findViewById(R.id.imageView3);
         final TextView nombre = (TextView) mView.findViewById(R.id.nombre);
@@ -308,28 +407,24 @@ public class AlarmFragment extends Fragment {
         cancelar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                actualizarAlarma("cancelado por la unidad",
-                        "/modules/panels/client/img/cancelbynetwork.png",
-                        "Ha sido cancelada la solicitud de atención: " + alarma.get(0).get_id() +
-                                " del cliente: " + alarma.get(0).getUser().getDisplayName() +
-                                ", por la unidad: "+networks.getCarCode()+
-                                ", cuyo responsable es: "+name);
+
+                AlertDialog alert = createSimpleDialogCancelar();
+                alert.show();
             }
         });
 
         atendido.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                actualizarAlarma("atendido",
-                        "/modules/panels/client/img/done.png",
-                        "Ha sido atendido exitosamente la solicitud de atención:" + alarma.get(0).get_id() +
-                                " del cliente: " + user.getDisplayName()+
-                                ", por la unidad: "+networks.getCarCode()+
-                                ", cuyo responsable es: "+name);
+
+                AlertDialog alert = createSimpleDialogAtendido();
+                alert.show();
+
             }
         });
-        Log.d("AlarmaFragment", "statusAtencion: "+alarma.size());
-
+        // Log.d("AlarmaFragment", "statusAtencion: "+alarma.size());
+        progreso.setVisibility(View.GONE);
+        message.setVisibility(View.VISIBLE);
         if (alarma.size() == 0) {
             imageStatusA2.setVisibility(View.VISIBLE);
             status2.setText("Sin asignación de atención");
@@ -347,7 +442,6 @@ public class AlarmFragment extends Fragment {
                 imageStatusP.setVisibility(View.VISIBLE);
                 imageStatusA1.setVisibility(View.GONE);
                 imageStatusP1.setVisibility(View.VISIBLE);
-                message.setVisibility(View.VISIBLE);
                 cancelar.setVisibility(View.VISIBLE);
                 atendido.setVisibility(View.VISIBLE);
 
