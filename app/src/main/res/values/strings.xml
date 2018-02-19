@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">GeoAtenciónUnidad</string>
+    <string name="app_name">Geo Unidad</string>
 
     <!-- Strings related to login -->
     <string name="prompt_email">Email</string>
@@ -18,7 +18,7 @@
     <string name="permission_rationale">"Contacts permissions are needed for providing email
         completions."
     </string>
-    <string name="title_activity_main">GeoAtención</string>
+    <string name="title_activity_main">GeoUnidad</string>
     <string name="title_activity_maps">Map</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>

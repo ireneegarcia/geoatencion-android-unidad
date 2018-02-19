@@ -58,8 +58,6 @@ import com.google.maps.android.ui.IconGenerator;
 
 import java.io.IOException;
 import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -117,6 +115,7 @@ public class MapsFragment extends Fragment {
     RouteSet routeSet = new RouteSet();
     RouteGet routeGet = new RouteGet();
 
+    static String routeTime = "";
 
 
     public MapsFragment() {
@@ -468,49 +467,35 @@ public class MapsFragment extends Fragment {
                                 IconGenerator iconFactory = new IconGenerator(cp);
                                 iconFactory.setStyle(IconGenerator.STYLE_BLUE);
 
-                                //long diffTime = mCurrentLocation.getTime() - (new Date(alarma.get(0).getCreated())).getTime();
+
                                 if (mCurrentLocation != null) {
-                                    SimpleDateFormat formatI = new SimpleDateFormat("yyy-MM-dd'T'HH:mm:ss", Locale.US);
-                                    try {
-                                        Date alarmCreated = formatI.parse(alarma.get(0).getCreated());
-                                        Log.d("diffTime2", ""+alarmCreated);
-                                        Log.d("diffTime1", ""+mCurrentLocation.getTime());
-                                        long timeDiff = mCurrentLocation.getTime() - alarmCreated.getTime();
-                                        double diffHours = Math.floor(timeDiff / 3600000); // horas
-                                        double diffMins = Math.round(timeDiff / (60000)); // minutos
 
-                                        //options.icon(BitmapDescriptorFactory.fromBitmap(iconFactory.makeIcon(DateFormat.getTimeInstance().format(new Date()))));
-                                        options.icon(BitmapDescriptorFactory.fromBitmap(iconFactory.makeIcon("Tiempo esperando: " + (int)diffMins +" min")));
+                                    //options.icon(BitmapDescriptorFactory.fromBitmap(iconFactory.makeIcon(DateFormat.getTimeInstance().format(new Date()))));
+                                    options.icon(BitmapDescriptorFactory.fromBitmap(iconFactory.makeIcon("Llegada en: "+routeTime)));
 
-                                        options.anchor(iconFactory.getAnchorU(), iconFactory.getAnchorV());
-                                        //options.title("Mi posición actual");
-                                        options.snippet(response.body().get(i).getAddress());
+                                    options.anchor(iconFactory.getAnchorU(), iconFactory.getAnchorV());
+                                    //options.title("Mi posición actual");
+                                    options.snippet(response.body().get(i).getAddress());
 
-                                        LatLng currentLatLng = new LatLng(Double.parseDouble(response.body().get(i).getLatitude()), Double.parseDouble(response.body().get(i).getLongitude()));
-                                        options.position(currentLatLng);
-                                        Marker mapMarker = googleMap.addMarker(options);
-                                        //mapMarker.setTitle(response.body().get(i).getUser().getDisplayName());
-                                        mapMarker.setTitle("Tiempo esperando: " + (int)diffMins +" min");
-                                        Log.d("my tag", "Marcador añadido.............................");
-                                        // For zooming automatically to the location of the marker
+                                    LatLng currentLatLng = new LatLng(Double.parseDouble(response.body().get(i).getLatitude()), Double.parseDouble(response.body().get(i).getLongitude()));
+                                    options.position(currentLatLng);
+                                    Marker mapMarker = googleMap.addMarker(options);
+                                    //mapMarker.setTitle(response.body().get(i).getUser().getDisplayName());
+                                    mapMarker.setTitle("Tiempo estimado de llegada: " + routeTime);
+                                    Log.d("my tag", "Marcador añadido.............................");
+                                    // For zooming automatically to the location of the marker
                             /*googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng,
                                     14));*/
-                                        Log.d("my tag", "Zoom hecho.............................");
-                                        Log.d("makeurl", " "+ response.body().get(i).getLatitude());
-                                        Log.d("makeurl", " "+ response.body().get(i).getLongitude());
-                                        Log.d("makeurl", " "+ networks.getLatitude());
-                                        Log.d("makeurl", " "+ networks.getLongitude());
-                                        Log.d("makeurl", " ");
-                                        makeURL(Double.parseDouble(response.body().get(i).getLatitude()),
-                                                Double.parseDouble(response.body().get(i).getLongitude()),
-                                                Double.parseDouble(networks.getLatitude()),
-                                                Double.parseDouble(networks.getLongitude()));
-
-                                        Log.d("diffTime3", " horas: "+((int)diffHours) + "minutos: "+((int)diffMins ));
-                                    } catch (ParseException e) {
-                                        e.printStackTrace();
-                                    }
-
+                                    Log.d("my tag", "Zoom hecho.............................");
+                                    Log.d("makeurl", " "+ response.body().get(i).getLatitude());
+                                    Log.d("makeurl", " "+ response.body().get(i).getLongitude());
+                                    Log.d("makeurl", " "+ networks.getLatitude());
+                                    Log.d("makeurl", " "+ networks.getLongitude());
+                                    Log.d("makeurl", " ");
+                                    makeURL(Double.parseDouble(response.body().get(i).getLatitude()),
+                                            Double.parseDouble(response.body().get(i).getLongitude()),
+                                            Double.parseDouble(networks.getLatitude()),
+                                            Double.parseDouble(networks.getLongitude()));
                                 }
 
                             }
@@ -556,14 +541,15 @@ public class MapsFragment extends Fragment {
         routeSet.setMode("driving");
         routeSet.setOrigin(sourcelat + "," + sourcelog);
         routeSet.setSensor("false");
+        Log.d("routeGet", ""+routeSet.getOrigin()+routeSet.getDestination()+routeSet.getSensor()+routeSet.getMode()+routeSet.getAlternatives());
         APIServiceRoute.FactoryRoute.getIntance().getRoute(routeSet.getOrigin(),routeSet.getDestination(),routeSet.getSensor(),routeSet.getMode(),routeSet.getAlternatives()).enqueue(new Callback<RouteGet>() {
             @Override
             public void onResponse(Call<RouteGet> call, Response<RouteGet> response) {
-
                 //code == 200
                 if(response.isSuccessful() && response.body().getRoutes().size() != 0 && response.body().getRoutes().get(0).getLegs().size() != 0) {
-                    routeGet = response.body();
 
+                    routeGet = response.body();
+                    routeTime = routeGet.getRoutes().get(0).getLegs().get(0).getDuration().getText();
                     Log.d("routeGet", " "+routeGet.getRoutes().toString());
                     Log.d("routeGet", " ");
                     for (int i = 0; i< routeGet.getRoutes().get(0).getLegs().get(0).getSteps().size(); i++){
@@ -876,7 +862,24 @@ public class MapsFragment extends Fragment {
 
                 //long diffTime = mCurrentLocation.getTime() - (new Date(alarma.get(0).getCreated())).getTime();
                 if (mCurrentLocation != null) {
-                    SimpleDateFormat formatI = new SimpleDateFormat("yyy-MM-dd'T'HH:mm:ss", Locale.US);
+
+                    options.icon(BitmapDescriptorFactory.fromBitmap(iconFactory.makeIcon(DateFormat.getTimeInstance().format(new Date()))));
+                    options.anchor(iconFactory.getAnchorU(), iconFactory.getAnchorV());
+                    //options.title("Mi posición actual");
+                    options.snippet(noti.getClientAddress());
+
+                    LatLng currentLatLng = new LatLng(Double.parseDouble(noti.getClientLatitude()), Double.parseDouble(noti.getClientLongitude()));
+                    options.position(currentLatLng);
+                    Marker mapMarker = googleMap.addMarker(options);
+                    //mapMarker.setTitle(noti.getClientName());
+                    mapMarker.setTitle(noti.getClientName());
+                    Log.d("my tag", "Marcador añadido.............................");
+                    // For zooming automatically to the location of the marker
+                /*googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng,
+                        14));*/
+                    Log.d("my tag", "Zoom hecho.............................");
+
+                    /*SimpleDateFormat formatI = new SimpleDateFormat("yyy-MM-dd'T'HH:mm:ss", Locale.US);
                     try {
                         Date alarmCreated = formatI.parse(alarma.get(0).getCreated());
                         Log.d("diffTime2", ""+alarmCreated);
@@ -899,12 +902,12 @@ public class MapsFragment extends Fragment {
                         mapMarker.setTitle("Tiempo esperando: " + (int)diffMins +" min");
                         Log.d("my tag", "Marcador añadido.............................");
                         // For zooming automatically to the location of the marker
-                /*googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng,
-                        14));*/
+                *//*googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng,
+                        14));*//*
                         Log.d("my tag", "Zoom hecho.............................");
                     } catch (ParseException e) {
                         e.printStackTrace();
-                    }
+                    }*/
                 }
 
             }

@@ -43,8 +43,8 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             Log.d("firebase", "Latitud del cliente: " + remoteMessage.getData().get("clientLatitude"));
             Log.d("firebase", "Logintud del cliente: " + remoteMessage.getData().get("clientLongitude"));
             Log.d("firebase", "Direccion del cliente: " + remoteMessage.getData().get("clientAddress"));
-            Log.d("firebase", "Nombre del cliente: " + remoteMessage.getData().get("status"));
-            Log.d("firebase", "status: " + remoteMessage.getData().get("clientName"));
+            Log.d("firebase", "Nombre del cliente: " + remoteMessage.getData().get("clientName"));
+            Log.d("firebase", "status: " + remoteMessage.getData().get("status"));
 
             notification = new NotificationFirebase(remoteMessage.getData().get("clientLatitude"),
                     remoteMessage.getData().get("clientLongitude"),
@@ -54,7 +54,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             MapsFragment.AgregarMarcadorPush(notification);
             String titulo = remoteMessage.getNotification().getTitle();
             String texto = remoteMessage.getNotification().getBody();
-            //showNotification(titulo, texto);
+            // showNotification(titulo, texto);
         }
     }
 
