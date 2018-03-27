@@ -44,6 +44,7 @@ import com.example.irene.geoatencionunidad.Model.RouteGet;
 import com.example.irene.geoatencionunidad.Model.RouteSet;
 import com.example.irene.geoatencionunidad.Remote.APIService;
 import com.example.irene.geoatencionunidad.Remote.APIServiceRoute;
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
@@ -87,8 +88,8 @@ public class MapsFragment extends Fragment {
     public static ArrayList<Alarmas> alarma = new ArrayList<>();
     // la unidad presente
     public static Networks networks;
-    // si hay atencion en proceso
-    public Boolean isprocess = false;
+    // para realizar zoom por primera vez
+     public Boolean isprocess = false;
 
     MapView mMapView;
     private static GoogleMap googleMap;
@@ -131,7 +132,6 @@ public class MapsFragment extends Fragment {
         c = (Context)getActivity();
         cp = (Context)getActivity();
         onMap = false;
-        isprocess = false;
 
         obtenerUnidad();
         mMapView = (MapView) mView.findViewById(R.id.mapView);
@@ -179,6 +179,8 @@ public class MapsFragment extends Fragment {
 
             }
         });
+
+
         return mView;
 
     }
@@ -461,7 +463,7 @@ public class MapsFragment extends Fragment {
                                     response.body().get(i).getStatus().equals("en atencion")){
                                 alarma.add(response.body().get(i));
 
-                                isprocess = true;
+                                // isprocess = true;
 
                                 MarkerOptions options = new MarkerOptions();
                                 IconGenerator iconFactory = new IconGenerator(cp);
@@ -830,6 +832,11 @@ public class MapsFragment extends Fragment {
         mapMarker.setTitle("Mi posición actual");
         Log.d("my tag", "Marcador añadido.............................");
         // For zooming automatically to the location of the marker
+        if (isprocess == false) {
+            googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng,
+                    14));
+            isprocess = true;
+        }
         /*googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng,
                 14));*/
         Log.d("my tag", "Zoom hecho.............................");
