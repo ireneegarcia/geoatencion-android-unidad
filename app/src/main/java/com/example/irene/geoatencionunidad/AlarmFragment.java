@@ -399,6 +399,7 @@ public class AlarmFragment extends Fragment {
         final TextView nombre = (TextView) mView.findViewById(R.id.nombre);
         final TextView telefono = (TextView) mView.findViewById(R.id.telefono);
         final TextView correo = (TextView) mView.findViewById(R.id.email);
+        final TextView direccion = (TextView) mView.findViewById(R.id.direccion);
 
         //nombre del usuario logueado
         SharedPreferences settings = c.getSharedPreferences("perfil", c.MODE_PRIVATE);
@@ -452,6 +453,7 @@ public class AlarmFragment extends Fragment {
                 nombre.setText(user.getDisplayName());
                 telefono.setText(user.getPhone());
                 correo.setText(user.getEmail());
+                direccion.setText(alarma.get(0).getAddress());
             }
         }
 
